@@ -395,7 +395,7 @@
     el.innerHTML =
       '<div class="flex flex-col gap-3 border-b border-neutral-100 bg-neutral-50/50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-5 sm:py-4">' +
         '<div class="flex min-w-0 w-full items-center gap-2 sm:min-w-0 sm:flex-1 sm:gap-3">' +
-          '<span class="drag-handle flex shrink-0 items-center rounded-md p-1 text-[#8a8a8a] hover:bg-white/80 hover:text-[#484848]" draggable="true" role="button" tabindex="0" aria-label="드래그하여 순서 변경" title="순서 이동">' +
+          '<span class="drag-handle flex shrink-0 cursor-grab items-center rounded-md p-1 text-[#8a8a8a] hover:bg-white/80 hover:text-[#484848] active:cursor-grabbing" role="button" tabindex="0" aria-label="드래그하여 순서 변경" title="순서 이동">' +
             '<span class="material-symbols-outlined text-[22px] leading-none">drag_indicator</span>' +
           '</span>' +
           '<button type="button" class="btn-toggle-expand flex min-w-0 flex-1 items-center gap-2 rounded-md text-left hover:bg-white/80 sm:gap-3">' +
@@ -687,14 +687,35 @@
 
     var dragHandle = el.querySelector(".drag-handle");
     if (dragHandle) {
-      dragHandle.addEventListener("dragstart", function (e) {
-        e.stopPropagation();
-        el.setAttribute("data-dragging", "1");
-        e.dataTransfer.effectAllowed = "move";
-        e.dataTransfer.setData("text/plain", "work-card");
-      });
-      dragHandle.addEventListener("dragend", function () {
-        el.removeAttribute("data-dragging");
+      dragHandle.addEventListener("pointerdown", function (pe) {
+        if (pe.button !== 0) return;
+        pe.preventDefault();
+        var card = el;
+        var ended = false;
+        card.setAttribute("data-dragging", "1");
+        function onMove(ev) {
+          var after = getDragAfterElement(listEl, ev.clientY);
+          if (after == null) listEl.appendChild(card);
+          else listEl.insertBefore(card, after);
+        }
+        function onEnd() {
+          if (ended) return;
+          ended = true;
+          card.removeAttribute("data-dragging");
+          renumberCards();
+          try {
+            dragHandle.releasePointerCapture(pe.pointerId);
+          } catch (x) {}
+          document.removeEventListener("pointermove", onMove);
+          document.removeEventListener("pointerup", onEnd);
+          document.removeEventListener("pointercancel", onEnd);
+        }
+        try {
+          dragHandle.setPointerCapture(pe.pointerId);
+        } catch (x) {}
+        document.addEventListener("pointermove", onMove);
+        document.addEventListener("pointerup", onEnd);
+        document.addEventListener("pointercancel", onEnd);
       });
     }
 
@@ -879,25 +900,6 @@
     return closest.element;
   }
 
-  function initListDragSort() {
-    if (listEl.getAttribute("data-drag-init") === "1") return;
-    listEl.setAttribute("data-drag-init", "1");
-    listEl.addEventListener("dragover", function (e) {
-      e.preventDefault();
-      var dragging = listEl.querySelector(".work-card[data-dragging=\"1\"]");
-      if (!dragging) return;
-      var after = getDragAfterElement(listEl, e.clientY);
-      if (after == null) {
-        listEl.appendChild(dragging);
-      } else {
-        listEl.insertBefore(dragging, after);
-      }
-    });
-    listEl.addEventListener("drop", function (e) {
-      e.preventDefault();
-    });
-  }
-
   function renumberCards() {
     listEl.querySelectorAll(".work-card").forEach(function (card, i) {
       card.setAttribute("data-card-index", String(i));
@@ -966,7 +968,6 @@
     });
   }
 
-  initListDragSort();
   initCareerAdmin();
   setAdminRootTab("work");
 
