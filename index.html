@@ -141,6 +141,83 @@
   #lightbox-scroll::-webkit-scrollbar {
     display: none;
   }
+  /* 라이트박스: 모바일(≤768px) 풀스크린 / 데스크톱(≥769px) 중앙 카드 + 어두운 배경 */
+  .lightbox-overlay-root {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    background: #fff;
+  }
+  .lightbox-popup-root {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+    min-width: 0;
+    flex-direction: column;
+    width: 100%;
+    overflow: hidden;
+    background: #fff;
+  }
+  .lightbox-popup-inner {
+    display: flex;
+    flex: 1 1 auto;
+    min-height: 0;
+    min-width: 0;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .lightbox-close-btn {
+    position: absolute;
+    right: 1.25rem;
+    top: 1.25rem;
+    z-index: 1210;
+  }
+  @media (min-width: 769px) {
+    .lightbox-overlay-root {
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.8);
+    }
+    .lightbox-popup-root {
+      flex: 0 0 auto;
+      width: 1600px;
+      max-width: calc(100vw - 80px);
+      height: calc(100vh - 80px);
+      max-height: calc(100vh - 80px);
+      margin: auto;
+      padding-left: 2.5rem;
+      padding-bottom: 0;
+      padding-right: 0;
+      box-sizing: border-box;
+    }
+    .lightbox-popup-inner {
+      flex-direction: row;
+      flex: 1 1 auto;
+      min-height: 0;
+    }
+    .lightbox-overlay-root .lb-aside {
+      width: 400px;
+      flex-shrink: 0;
+      max-width: none;
+      overflow: hidden;
+      padding: 160px 2.5rem 0 0;
+      box-sizing: border-box;
+    }
+    #lightbox-scroll {
+      margin-left: auto;
+      width: 900px;
+      max-width: 100%;
+      flex: 0 0 auto;
+      min-height: 0;
+      align-self: stretch;
+    }
+    .lightbox-close-btn {
+      position: fixed;
+      right: 20px;
+      top: 2.5rem;
+    }
+  }
   /* 너비 900px 초과 이미지는 비율 유지해 컬럼 너비 안에 맞춤(잘림 없음) */
   #lightbox-img {
     display: block;
@@ -396,18 +473,20 @@
   </nav>
 </div>
 
-<!-- Lightbox: 풀스크린 팝업 · 좌(상단) 텍스트 · 우(하단) 이미지 스크롤 -->
-<div id="lightbox-overlay" class="pointer-events-none fixed inset-0 z-[1200] flex min-h-0 flex-col bg-white opacity-0 transition-opacity duration-[400ms]" aria-hidden="true" role="dialog" aria-modal="true">
-  <button type="button" id="lightbox-close" class="pointer-events-auto absolute right-5 top-5 z-[1210] flex h-[52px] w-[52px] items-center justify-center rounded-full border border-neutral-300 bg-white text-[#202020] shadow-sm transition-colors duration-200 hover:bg-neutral-100" aria-label="닫기">
+<!-- Lightbox: 모바일 풀스크린 · 데스크톱 중앙 카드(어두운 오버레이) -->
+<div id="lightbox-overlay" class="lightbox-overlay-root pointer-events-none fixed inset-0 z-[1200] flex min-h-0 opacity-0 transition-opacity duration-[400ms]" aria-hidden="true" role="dialog" aria-modal="true">
+  <button type="button" id="lightbox-close" class="lightbox-close-btn pointer-events-auto flex h-[52px] w-[52px] items-center justify-center rounded-full border border-neutral-300 bg-white text-[#202020] shadow-sm transition-colors duration-200 hover:bg-neutral-100" aria-label="닫기">
     <span class="material-symbols-outlined text-[18px] leading-none">close</span>
   </button>
-  <div id="lightbox-popup" class="box-border flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden lg:flex-row">
-    <aside class="lb-aside flex shrink-0 flex-col overflow-y-auto px-6 pb-4 pt-16 lg:w-[min(400px,42vw)] lg:max-w-md lg:shrink-0 lg:overflow-y-auto lg:px-10 lg:pb-8 lg:pr-8 lg:pt-24">
-      <h2 id="lightbox-detail-title" class="lb-detail-title"></h2>
-      <div id="lightbox-detail-body" class="lb-detail-body"></div>
-    </aside>
-    <div id="lightbox-scroll" class="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden bg-[#D8D8D8]">
-      <img id="lightbox-img" alt="" class="m-0 block border-0 p-0"/>
+  <div id="lightbox-popup" class="lightbox-popup-root box-border">
+    <div id="lightbox-popup-inner" class="lightbox-popup-inner">
+      <aside class="lb-aside flex shrink-0 flex-col overflow-y-auto px-6 pb-4 pt-16">
+        <h2 id="lightbox-detail-title" class="lb-detail-title"></h2>
+        <div id="lightbox-detail-body" class="lb-detail-body"></div>
+      </aside>
+      <div id="lightbox-scroll" class="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden bg-[#D8D8D8]">
+        <img id="lightbox-img" alt="" class="m-0 block border-0 p-0"/>
+      </div>
     </div>
   </div>
 </div>
