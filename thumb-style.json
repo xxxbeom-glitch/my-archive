@@ -1,0 +1,22 @@
+{
+  "cardW": 500,
+  "cardH": 550,
+  "metaLeft": 28,
+  "metaTop": 38,
+  "metaWidth": 300,
+  "metaGap": 4,
+  "yearFs": 14,
+  "yearLh": 18,
+  "yearWeight": 500,
+  "titleFs": 20,
+  "titleLh": 28,
+  "titleMt": 2,
+  "titleWeight": 600,
+  "tagsMt": 5,
+  "tagsGap": 6,
+  "tagFs": 12,
+  "tagLh": 14,
+  "tagPx": 12,
+  "tagPy": 8,
+  "tagRadius": 18
+}

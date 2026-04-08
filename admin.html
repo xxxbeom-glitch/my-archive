@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin | 박성범 아카이브</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  *, *::before, *::after { box-sizing: inherit; }
+  body {
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    color: #202020;
+    background: #f2f2f2;
+  }
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+  }
+  .admin-input {
+    width: 100%;
+    border: 1px solid #e5e5e5;
+    background: #fff;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: #202020;
+    border-radius: 4px;
+  }
+  .admin-input:focus {
+    outline: none;
+    border-color: #202020;
+    box-shadow: 0 0 0 1px #202020;
+  }
+  .admin-label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #484848;
+  }
+  .admin-hint {
+    font-size: 11px;
+    color: #8a8a8a;
+    margin-top: 4px;
+    line-height: 1.45;
+  }
+  .work-card.is-collapsed .card-collapsible {
+    display: none;
+  }
+  .work-card .collapse-icon {
+    transition: transform 0.2s ease;
+  }
+  .work-card.is-collapsed .collapse-icon {
+    transform: rotate(-90deg);
+  }
+  .tab-panel { display: none; }
+  .tab-panel.is-active { display: block; }
+  .tab-btn.is-active {
+    border-bottom-color: #202020;
+    color: #202020;
+    font-weight: 600;
+  }
+  .drag-handle {
+    cursor: grab;
+    touch-action: none;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .drag-handle:active {
+    cursor: grabbing;
+  }
+  .work-card[data-dragging="1"] {
+    opacity: 0.55;
+  }
+</style>
+</head>
+<body class="min-h-screen pb-16">
+  <div class="mx-auto w-full max-w-3xl px-4 py-8 sm:px-6">
+    <header class="mb-8 flex flex-col gap-4 border-b border-neutral-200 pb-8 sm:flex-row sm:items-end sm:justify-between">
+      <div class="min-w-0">
+        <p class="mb-1 text-xs font-medium uppercase tracking-wider text-[#8a8a8a]">Portfolio archive</p>
+        <h1 class="text-2xl font-bold tracking-tight text-[#202020] sm:text-[28px]">Admin</h1>
+        <p class="mt-3 text-sm leading-relaxed text-[#484848]">
+          메인 페이지와 동일한 <code class="rounded bg-white px-1.5 py-0.5 text-xs text-[#202020]">localStorage</code> 키
+          <span class="font-mono text-xs">studio-archive-portfolio-v1</span>에 저장됩니다.
+          카드는 <strong>썸네일</strong> / <strong>라이트박스</strong> 탭으로 나뉩니다. 왼쪽 <strong>⋮⋮</strong> 핸들을 드래그하면 순서를 바꿀 수 있고, <strong>복제</strong>로 카드를 복사할 수 있습니다. 변경 후 「모두 저장」으로 메인에 반영하세요. 이미지는 브라우저 저장 한도(~5MB)를 넘기지 않도록 업로드·저장 시 자동으로 줄입니다.
+        </p>
+      </div>
+      <a class="inline-flex shrink-0 items-center gap-1.5 text-sm font-medium text-[#484848] underline decoration-neutral-300 underline-offset-4 hover:text-[#202020]" href="index.html">
+        <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+        사이트 보기
+      </a>
+    </header>
+
+    <section class="mb-10 rounded-xl border border-neutral-200/80 bg-white p-5 shadow-sm sm:p-6" aria-labelledby="career-admin-heading">
+      <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div class="min-w-0">
+          <h2 id="career-admin-heading" class="text-lg font-bold text-[#202020]">Career · 경력</h2>
+          <p class="mt-1 text-sm leading-relaxed text-[#484848]">
+            메인에서 <strong>career</strong> 선택 시 우측 패널에 표시됩니다. Figma 스펙(제목·기간·내용·참여도·구분선)에 맞춰 렌더링됩니다. 「모두 저장」 시 작품 목록과 함께
+            <code class="rounded bg-[#f2f2f2] px-1.5 py-0.5 text-xs">studio-archive-career-v1</code> 키로 저장됩니다.
+          </p>
+        </div>
+        <button type="button" id="btn-career-add" class="inline-flex shrink-0 items-center gap-2 rounded-md border border-neutral-300 bg-white px-4 py-2 text-sm font-medium text-[#202020] transition-colors hover:bg-neutral-50">
+          <span class="material-symbols-outlined text-[18px]">add</span>
+          경력 항목 추가
+        </button>
+      </div>
+      <div id="career-admin-list" class="space-y-4"></div>
+    </section>
+
+    <div id="work-list" class="space-y-5"></div>
+
+    <div id="save-message" class="mt-8 hidden rounded-lg border px-4 py-3 text-sm" role="status"></div>
+
+    <div class="mt-10 flex flex-wrap gap-3">
+      <button type="button" id="btn-add" class="inline-flex items-center gap-2 rounded-md border border-neutral-300 bg-white px-5 py-2.5 text-sm font-medium text-[#202020] transition-colors hover:bg-neutral-50">
+        <span class="material-symbols-outlined text-[18px]">add</span>
+        작품 추가
+      </button>
+      <button type="button" id="btn-save" class="inline-flex items-center gap-2 rounded-md bg-[#202020] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-neutral-800">
+        <span class="material-symbols-outlined text-[18px]">save</span>
+        모두 저장
+      </button>
+    </div>
+  </div>
+
+<script>
+(function () {
+  var STORAGE_KEY = "studio-archive-portfolio-v1";
+  var CAREER_STORAGE_KEY = "studio-archive-career-v1";
+
+  function defaultCareerPayload() {
+    var one = {
+      title: "LGU+ 전사구축리뉴얼",
+      period: "2021. 12. 01 ~ 2022. 05. 01",
+      body: "LGU+ 전사 리뉴얼 프로젝트 참여",
+      involvement: "25%"
+    };
+    return {
+      entries: [
+        JSON.parse(JSON.stringify(one)),
+        JSON.parse(JSON.stringify(one)),
+        JSON.parse(JSON.stringify(one))
+      ]
+    };
+  }
+
+  function loadCareerJson() {
+    try {
+      var raw = localStorage.getItem(CAREER_STORAGE_KEY);
+      if (!raw || !raw.trim()) return null;
+      var o = JSON.parse(raw);
+      if (!o || !Array.isArray(o.entries)) return null;
+      return o;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function readFileAsDataURL(file) {
+    return new Promise(function (resolve, reject) {
+      var r = new FileReader();
+      r.onload = function () { resolve(r.result); };
+      r.onerror = function () { reject(r.error); };
+      r.readAsDataURL(file);
+    });
+  }
+
+  /**
+   * localStorage(~5MB) 한도 대비: data URL 이미지를 캔버스로 축소 후 JPEG로 재인코딩.
+   * PNG 투명은 흰 배경 위에 합성.
+   */
+  function compressDataUrlImage(dataUrl, maxW, maxH, quality) {
+    return new Promise(function (resolve) {
+      if (!dataUrl || dataUrl.indexOf("data:") !== 0) {
+        resolve(dataUrl);
+        return;
+      }
+      var img = new Image();
+      img.onload = function () {
+        try {
+          var w = img.naturalWidth;
+          var h = img.naturalHeight;
+          if (!w || !h) {
+            resolve(dataUrl);
+            return;
+          }
+          var scale = Math.min(1, maxW / w, maxH / h);
+          var cw = Math.max(1, Math.round(w * scale));
+          var ch = Math.max(1, Math.round(h * scale));
+          var c = document.createElement("canvas");
+          c.width = cw;
+          c.height = ch;
+          var ctx = c.getContext("2d");
+          if (!ctx) {
+            resolve(dataUrl);
+            return;
+          }
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, cw, ch);
+          ctx.drawImage(img, 0, 0, cw, ch);
+          var jpeg = c.toDataURL("image/jpeg", quality);
+          resolve(jpeg.length < dataUrl.length ? jpeg : dataUrl);
+        } catch (err) {
+          resolve(dataUrl);
+        }
+      };
+      img.onerror = function () {
+        resolve(dataUrl);
+      };
+      img.src = dataUrl;
+    });
+  }
+
+  function compressWorkImages(work, preset) {
+    var tw = preset.thumbMax;
+    var th = preset.thumbMax;
+    var ow = preset.overlayMaxW;
+    var oh = preset.overlayMaxH;
+    var q = preset.quality;
+    var tasks = [];
+    if (work.thumbnailDataUrl) {
+      tasks.push(
+        compressDataUrlImage(work.thumbnailDataUrl, tw, th, q).then(function (u) {
+          work.thumbnailDataUrl = u;
+        })
+      );
+    }
+    if (work.overlayDataUrl) {
+      tasks.push(
+        compressDataUrlImage(work.overlayDataUrl, ow, oh, q).then(function (u) {
+          work.overlayDataUrl = u;
+        })
+      );
+    }
+    return Promise.all(tasks);
+  }
+
+  var COMPRESSION_PRESETS = [
+    { thumbMax: 960, overlayMaxW: 900, overlayMaxH: 12000, quality: 0.84 },
+    { thumbMax: 640, overlayMaxW: 900, overlayMaxH: 8000, quality: 0.76 },
+    { thumbMax: 480, overlayMaxW: 800, overlayMaxH: 6000, quality: 0.68 },
+    { thumbMax: 360, overlayMaxW: 720, overlayMaxH: 4000, quality: 0.58 }
+  ];
+
+  function compressAllWorksForStorage(works, presetIndex) {
+    var preset = COMPRESSION_PRESETS[Math.min(presetIndex, COMPRESSION_PRESETS.length - 1)];
+    return Promise.all(works.map(function (w) {
+      return compressWorkImages(w, preset);
+    }));
+  }
+
+  function applyWorksToCardDoms(cards, works) {
+    for (var i = 0; i < cards.length && i < works.length; i++) {
+      var el = cards[i];
+      var w = works[i];
+      var tp = el.querySelector(".thumb-preview");
+      var op = el.querySelector(".overlay-preview");
+      if (w.thumbnailDataUrl) {
+        tp.src = w.thumbnailDataUrl;
+        tp.classList.remove("hidden");
+      } else if (w.thumbnailUrl) {
+        tp.src = w.thumbnailUrl;
+        tp.classList.remove("hidden");
+      }
+      if (w.overlayDataUrl) {
+        op.src = w.overlayDataUrl;
+        op.classList.remove("hidden");
+      } else if (w.overlayUrl) {
+        op.src = w.overlayUrl;
+        op.classList.remove("hidden");
+      }
+    }
+  }
+
+  function loadFromStorage() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return [];
+      var arr = JSON.parse(raw);
+      return Array.isArray(arr) ? arr : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function emptyWork(n) {
+    return {
+      index: "WORK #" + n,
+      title: "",
+      description: "",
+      location: "",
+      detailLabel: "",
+      detailTitle: "",
+      detailBody: "",
+      tags: [],
+      thumbnailDataUrl: "",
+      overlayDataUrl: ""
+    };
+  }
+
+  function cardTemplate(w, idx) {
+    var el = document.createElement("article");
+    el.className = "work-card overflow-hidden rounded-xl border border-neutral-200/80 bg-white shadow-sm";
+    el.setAttribute("data-card-index", String(idx));
+    el.innerHTML =
+      '<div class="flex flex-col gap-3 border-b border-neutral-100 bg-neutral-50/50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-5 sm:py-4">' +
+        '<div class="flex min-w-0 w-full items-center gap-2 sm:min-w-0 sm:flex-1 sm:gap-3">' +
+          '<span class="drag-handle flex shrink-0 items-center rounded-md p-1 text-[#8a8a8a] hover:bg-white/80 hover:text-[#484848]" draggable="true" role="button" tabindex="0" aria-label="드래그하여 순서 변경" title="순서 이동">' +
+            '<span class="material-symbols-outlined text-[22px] leading-none">drag_indicator</span>' +
+          '</span>' +
+          '<button type="button" class="btn-toggle-expand flex min-w-0 flex-1 items-center gap-2 rounded-md text-left hover:bg-white/80 sm:gap-3">' +
+            '<span class="collapse-icon material-symbols-outlined shrink-0 text-[22px] text-[#484848]">expand_more</span>' +
+            '<div class="min-w-0 flex-1">' +
+              '<span class="card-index-label text-xs font-semibold uppercase tracking-wider text-[#8a8a8a]">작품 ' + (idx + 1) + '</span>' +
+              '<p class="card-subhint mt-0.5 text-sm leading-snug text-[#484848]">썸네일 · 라이트박스 · 펼침/접기</p>' +
+            '</div>' +
+          '</button>' +
+        '</div>' +
+        '<div class="flex w-full shrink-0 flex-wrap items-stretch gap-2 sm:w-auto sm:justify-end">' +
+          '<button type="button" class="btn-save-card inline-flex items-center gap-1 rounded-md border border-[#202020] bg-[#202020] px-3 py-1.5 text-xs font-medium text-white hover:bg-neutral-800">' +
+            '<span class="material-symbols-outlined text-[16px]">save</span>이 카드 저장</button>' +
+          '<button type="button" class="btn-edit inline-flex items-center gap-1 rounded-md border border-neutral-200 bg-white px-3 py-1.5 text-xs font-medium text-[#202020] hover:bg-neutral-50">' +
+            '<span class="material-symbols-outlined text-[16px]">edit</span>편집</button>' +
+          '<button type="button" class="btn-duplicate inline-flex items-center gap-1 rounded-md border border-neutral-200 bg-white px-3 py-1.5 text-xs font-medium text-[#202020] hover:bg-neutral-50">' +
+            '<span class="material-symbols-outlined text-[16px]">content_copy</span>복제</button>' +
+          '<button type="button" class="btn-delete inline-flex items-center gap-1 rounded-md border border-red-200 bg-white px-3 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50">' +
+            '<span class="material-symbols-outlined text-[16px]">delete</span>삭제</button>' +
+        '</div>' +
+      '</div>' +
+
+      '<div class="card-collapsible">' +
+        '<div class="flex gap-0 border-b border-neutral-200 px-4 sm:px-5">' +
+          '<button type="button" class="tab-btn is-active flex-1 border-b-2 border-transparent px-3 py-2.5 text-sm text-[#484848] hover:text-[#202020] sm:flex-none sm:px-4 sm:py-3" data-tab="thumb">썸네일</button>' +
+          '<button type="button" class="tab-btn flex-1 border-b-2 border-transparent px-3 py-2.5 text-sm text-[#484848] hover:text-[#202020] sm:flex-none sm:px-4 sm:py-3" data-tab="lightbox">라이트박스</button>' +
+        '</div>' +
+
+        '<div class="tab-panel is-active p-4 sm:p-5" data-panel="thumb">' +
+          '<div class="space-y-6">' +
+            '<div>' +
+              '<label class="admin-label">썸네일 이미지 (카드 배경)</label>' +
+              '<input type="file" accept="image/*" class="thumb-file w-full text-sm text-[#484848] file:mr-3 file:rounded file:border-0 file:bg-[#f2f2f2] file:px-3 file:py-2 file:text-sm file:font-medium file:text-[#202020]"/>' +
+              '<img class="thumb-preview mt-3 hidden max-h-48 w-full rounded border border-neutral-100 bg-[#e8e8e8] object-contain" alt="썸네일 미리보기"/>' +
+              '<p class="admin-hint">없으면 카드는 그레이 톤만 표시됩니다.</p>' +
+            '</div>' +
+            '<section class="rounded-lg border border-dashed border-neutral-200 bg-[#fafafa] p-5">' +
+              '<h2 class="mb-4 text-sm font-bold text-[#202020]">그리드 카드 텍스트</h2>' +
+              '<div class="grid gap-4">' +
+                '<div>' +
+                  '<label class="admin-label">WORK 라벨</label>' +
+                  '<input type="text" class="field-index admin-input" placeholder="WORK #1"/>' +
+                '</div>' +
+                '<div>' +
+                  '<label class="admin-label">프로젝트명</label>' +
+                  '<input type="text" class="field-title admin-input" placeholder="카드에 표시되는 제목"/>' +
+                '</div>' +
+                '<div>' +
+                  '<label class="admin-label">연도 / 위치</label>' +
+                  '<input type="text" class="field-location admin-input" placeholder="예: 2026"/>' +
+                  '<p class="admin-hint">연도 숫자가 있으면 카드 상단 연도로 사용됩니다.</p>' +
+                '</div>' +
+                '<div>' +
+                  '<label class="admin-label">태그 (최대 3개)</label>' +
+                  '<div class="grid gap-3 sm:grid-cols-3">' +
+                    '<input type="text" class="field-tag-1 admin-input" placeholder="APP" maxlength="32"/>' +
+                    '<input type="text" class="field-tag-2 admin-input" placeholder="WEB" maxlength="32"/>' +
+                    '<input type="text" class="field-tag-3 admin-input" placeholder="E-Commerce" maxlength="32"/>' +
+                  '</div>' +
+                  '<p class="admin-hint">비우면 APP · WEB · E-Commerce 기본값.</p>' +
+                '</div>' +
+                '<div>' +
+                  '<label class="admin-label">설명 (선택)</label>' +
+                  '<textarea rows="2" class="field-desc admin-input resize-y" placeholder="메인 카드 UI에는 미표시"></textarea>' +
+                '</div>' +
+              '</div>' +
+            '</section>' +
+          '</div>' +
+        '</div>' +
+
+        '<div class="tab-panel p-4 sm:p-5" data-panel="lightbox">' +
+          '<div class="space-y-6">' +
+            '<div>' +
+              '<label class="admin-label">라이트박스 이미지 (최대 900px 너비)</label>' +
+              '<input type="file" accept="image/*" class="overlay-file w-full text-sm text-[#484848] file:mr-3 file:rounded file:border-0 file:bg-[#f2f2f2] file:px-3 file:py-2 file:text-sm file:font-medium file:text-[#202020]"/>' +
+              '<img class="overlay-preview mt-3 hidden max-h-48 w-full rounded border border-neutral-100 bg-[#D8D8D8] object-contain" alt="라이트박스 미리보기"/>' +
+              '<p class="admin-hint">팝업 오른쪽 세로 스크롤 영역.</p>' +
+            '</div>' +
+            '<section class="rounded-lg border border-dashed border-neutral-300 bg-white p-5">' +
+              '<h2 class="mb-1 text-sm font-bold text-[#202020]">팝업 텍스트 (400px 영역)</h2>' +
+              '<p class="mb-4 text-xs leading-relaxed text-[#8a8a8a]">썸네일 카드와 별도입니다.</p>' +
+              '<div class="space-y-4">' +
+                '<div>' +
+                  '<label class="admin-label">상단 라벨</label>' +
+                  '<input type="text" class="field-detail-label admin-input" placeholder="예: 프로젝트 개요"/>' +
+                '</div>' +
+                '<div>' +
+                  '<label class="admin-label">팝업 제목</label>' +
+                  '<input type="text" class="field-detail-title admin-input"/>' +
+                '</div>' +
+                '<div>' +
+                  '<label class="admin-label">팝업 본문</label>' +
+                  '<textarea rows="6" class="field-detail-body admin-input resize-y"></textarea>' +
+                '</div>' +
+              '</div>' +
+            '</section>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    return el;
+  }
+
+  function fillCard(el, w) {
+    el.querySelector(".field-index").value = w.index || "";
+    el.querySelector(".field-title").value = w.title || "";
+    el.querySelector(".field-desc").value = w.description || "";
+    el.querySelector(".field-location").value = w.location || "";
+    el.querySelector(".field-detail-label").value = w.detailLabel || "";
+    el.querySelector(".field-detail-title").value = w.detailTitle || "";
+    el.querySelector(".field-detail-body").value = w.detailBody || "";
+
+    var tags = Array.isArray(w.tags) ? w.tags : [];
+    el.querySelector(".field-tag-1").value = tags[0] || "";
+    el.querySelector(".field-tag-2").value = tags[1] || "";
+    el.querySelector(".field-tag-3").value = tags[2] || "";
+
+    var tp = el.querySelector(".thumb-preview");
+    var op = el.querySelector(".overlay-preview");
+    var tsrc = w.thumbnailDataUrl || w.thumbnailUrl;
+    var osrc = w.overlayDataUrl || w.overlayUrl;
+    if (tsrc) {
+      tp.src = tsrc;
+      tp.classList.remove("hidden");
+    }
+    if (osrc) {
+      op.src = osrc;
+      op.classList.remove("hidden");
+    }
+  }
+
+  function setActiveTab(card, tabName) {
+    card.querySelectorAll(".tab-btn").forEach(function (b) {
+      var on = b.getAttribute("data-tab") === tabName;
+      b.classList.toggle("is-active", on);
+    });
+    card.querySelectorAll(".tab-panel").forEach(function (p) {
+      p.classList.toggle("is-active", p.getAttribute("data-panel") === tabName);
+    });
+  }
+
+  function wireCard(el) {
+    var thumbFile = el.querySelector(".thumb-file");
+    var overlayFile = el.querySelector(".overlay-file");
+    var thumbPrev = el.querySelector(".thumb-preview");
+    var overlayPrev = el.querySelector(".overlay-preview");
+
+    thumbFile.addEventListener("change", function () {
+      var f = thumbFile.files[0];
+      if (!f) return;
+      readFileAsDataURL(f).then(function (url) {
+        var p0 = COMPRESSION_PRESETS[0];
+        return compressDataUrlImage(url, p0.thumbMax, p0.thumbMax, p0.quality);
+      }).then(function (url) {
+        thumbPrev.src = url;
+        thumbPrev.classList.remove("hidden");
+      });
+    });
+
+    overlayFile.addEventListener("change", function () {
+      var f = overlayFile.files[0];
+      if (!f) return;
+      readFileAsDataURL(f).then(function (url) {
+        var p0 = COMPRESSION_PRESETS[0];
+        return compressDataUrlImage(url, p0.overlayMaxW, p0.overlayMaxH, p0.quality);
+      }).then(function (url) {
+        overlayPrev.src = url;
+        overlayPrev.classList.remove("hidden");
+      });
+    });
+
+    el.querySelector(".btn-toggle-expand").addEventListener("click", function () {
+      el.classList.toggle("is-collapsed");
+    });
+
+    el.querySelectorAll(".tab-btn").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        setActiveTab(el, btn.getAttribute("data-tab"));
+      });
+    });
+
+    el.querySelector(".btn-save-card").addEventListener("click", function (e) {
+      e.stopPropagation();
+      persistAllCards(function (ok, err) {
+        if (ok) {
+          var n = 1 + Array.prototype.indexOf.call(listEl.querySelectorAll(".work-card"), el);
+          showSaveMessage("저장되었습니다. (작품 " + n + " 포함 전체 목록 동기화) 메인 새로고침 후 확인하세요.", true);
+        } else {
+          showSaveMessage(err || "저장 실패", false);
+        }
+      });
+    });
+
+    el.querySelector(".btn-delete").addEventListener("click", function (e) {
+      e.stopPropagation();
+      el.remove();
+      renumberCards();
+    });
+
+    el.querySelector(".btn-duplicate").addEventListener("click", function (e) {
+      e.stopPropagation();
+      var data = serializeCard(el);
+      var copy = JSON.parse(JSON.stringify(data));
+      var nc = cardTemplate(copy, 0);
+      fillCard(nc, copy);
+      wireCard(nc);
+      if (el.nextSibling) {
+        listEl.insertBefore(nc, el.nextSibling);
+      } else {
+        listEl.appendChild(nc);
+      }
+      renumberCards();
+      showSaveMessage("카드를 복제했습니다. 「모두 저장」하면 메인에 반영됩니다.", true);
+    });
+
+    var dragHandle = el.querySelector(".drag-handle");
+    if (dragHandle) {
+      dragHandle.addEventListener("dragstart", function (e) {
+        e.stopPropagation();
+        el.setAttribute("data-dragging", "1");
+        e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.setData("text/plain", "work-card");
+      });
+      dragHandle.addEventListener("dragend", function () {
+        el.removeAttribute("data-dragging");
+      });
+    }
+
+    el.querySelector(".btn-edit").addEventListener("click", function (e) {
+      e.stopPropagation();
+      el.classList.remove("is-collapsed");
+      setActiveTab(el, "thumb");
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      el.classList.add("ring-2", "ring-[#202020]", "ring-offset-2", "ring-offset-[#f2f2f2]");
+      setTimeout(function () {
+        el.classList.remove("ring-2", "ring-[#202020]", "ring-offset-2", "ring-offset-[#f2f2f2]");
+      }, 1200);
+      el.querySelector(".field-index").focus();
+    });
+  }
+
+  function serializeCard(el) {
+    var thumbPrev = el.querySelector(".thumb-preview");
+    var overlayPrev = el.querySelector(".overlay-preview");
+    var thumbSrc = thumbPrev.classList.contains("hidden") ? "" : thumbPrev.src || "";
+    var overlaySrc = overlayPrev.classList.contains("hidden") ? "" : overlayPrev.src || "";
+    var out = {
+      index: el.querySelector(".field-index").value.trim(),
+      title: el.querySelector(".field-title").value.trim(),
+      description: el.querySelector(".field-desc").value.trim(),
+      location: el.querySelector(".field-location").value.trim(),
+      detailLabel: el.querySelector(".field-detail-label").value.trim(),
+      detailTitle: el.querySelector(".field-detail-title").value.trim(),
+      detailBody: el.querySelector(".field-detail-body").value.trim()
+    };
+    var tag1 = el.querySelector(".field-tag-1").value.trim();
+    var tag2 = el.querySelector(".field-tag-2").value.trim();
+    var tag3 = el.querySelector(".field-tag-3").value.trim();
+    var tagsArr = [tag1, tag2, tag3].filter(Boolean);
+    if (tagsArr.length) out.tags = tagsArr;
+    if (thumbSrc.indexOf("data:") === 0) out.thumbnailDataUrl = thumbSrc;
+    else if (thumbSrc.indexOf("http") === 0) out.thumbnailUrl = thumbSrc;
+    if (overlaySrc.indexOf("data:") === 0) out.overlayDataUrl = overlaySrc;
+    else if (overlaySrc.indexOf("http") === 0) out.overlayUrl = overlaySrc;
+    return out;
+  }
+
+  var listEl = document.getElementById("work-list");
+  var msgEl = document.getElementById("save-message");
+  var careerAdminList = document.getElementById("career-admin-list");
+
+  function addCareerRow(data) {
+    if (!careerAdminList) return;
+    var d = data || { title: "", period: "", body: "", involvement: "" };
+    var row = document.createElement("div");
+    row.className = "career-admin-row rounded-lg border border-dashed border-neutral-200 bg-[#fafafa] p-4 sm:p-5";
+    row.innerHTML =
+      '<div class="mb-3 flex items-center justify-between gap-2">' +
+      '<span class="text-xs font-semibold uppercase tracking-wider text-[#8a8a8a]">경력 블록</span>' +
+      '<button type="button" class="btn-career-del rounded-md px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50">삭제</button>' +
+      "</div>" +
+      '<div class="grid gap-3">' +
+      '<div><label class="admin-label">프로젝트명</label><input type="text" class="career-title admin-input" placeholder="예: LGU+ 전사구축리뉴얼" /></div>' +
+      '<div><label class="admin-label">기간</label><input type="text" class="career-period admin-input" placeholder="예: 2021. 12. 01 ~ 2022. 05. 01" /></div>' +
+      '<div><label class="admin-label">내용</label><input type="text" class="career-body admin-input" placeholder="한 줄 요약" /></div>' +
+      '<div><label class="admin-label">참여도</label><input type="text" class="career-involvement admin-input" placeholder="예: 25%" /></div>' +
+      "</div>";
+    row.querySelector(".career-title").value = d.title || "";
+    row.querySelector(".career-period").value = d.period || "";
+    row.querySelector(".career-body").value = d.body || "";
+    row.querySelector(".career-involvement").value = d.involvement || "";
+    row.querySelector(".btn-career-del").addEventListener("click", function () {
+      row.remove();
+    });
+    careerAdminList.appendChild(row);
+  }
+
+  function initCareerAdmin() {
+    if (!careerAdminList) return;
+    var data = loadCareerJson();
+    careerAdminList.innerHTML = "";
+    if (!data) {
+      defaultCareerPayload().entries.forEach(function (e) {
+        addCareerRow(e);
+      });
+      return;
+    }
+    if (!data.entries.length) {
+      addCareerRow({});
+      return;
+    }
+    data.entries.forEach(function (e) {
+      addCareerRow(e);
+    });
+  }
+
+  function saveCareerFromAdminSync() {
+    if (!careerAdminList) return true;
+    try {
+      var rows = careerAdminList.querySelectorAll(".career-admin-row");
+      var entries = [];
+      rows.forEach(function (row) {
+        entries.push({
+          title: row.querySelector(".career-title").value.trim(),
+          period: row.querySelector(".career-period").value.trim(),
+          body: row.querySelector(".career-body").value.trim(),
+          involvement: row.querySelector(".career-involvement").value.trim()
+        });
+      });
+      localStorage.setItem(CAREER_STORAGE_KEY, JSON.stringify({ entries: entries }));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function getDragAfterElement(container, y) {
+    var cards = [].slice.call(container.querySelectorAll(".work-card:not([data-dragging=\"1\"])"));
+    var closest = { offset: Number.NEGATIVE_INFINITY, element: null };
+    cards.forEach(function (child) {
+      var box = child.getBoundingClientRect();
+      var offset = y - box.top - box.height / 2;
+      if (offset < 0 && offset > closest.offset) {
+        closest.offset = offset;
+        closest.element = child;
+      }
+    });
+    return closest.element;
+  }
+
+  function initListDragSort() {
+    if (listEl.getAttribute("data-drag-init") === "1") return;
+    listEl.setAttribute("data-drag-init", "1");
+    listEl.addEventListener("dragover", function (e) {
+      e.preventDefault();
+      var dragging = listEl.querySelector(".work-card[data-dragging=\"1\"]");
+      if (!dragging) return;
+      var after = getDragAfterElement(listEl, e.clientY);
+      if (after == null) {
+        listEl.appendChild(dragging);
+      } else {
+        listEl.insertBefore(dragging, after);
+      }
+    });
+    listEl.addEventListener("drop", function (e) {
+      e.preventDefault();
+    });
+  }
+
+  function renumberCards() {
+    listEl.querySelectorAll(".work-card").forEach(function (card, i) {
+      card.setAttribute("data-card-index", String(i));
+      var lab = card.querySelector(".card-index-label");
+      if (lab) lab.textContent = "작품 " + (i + 1);
+    });
+  }
+
+  function persistAllCards(callback) {
+    var cards = [].slice.call(listEl.querySelectorAll(".work-card"));
+    var out = cards.map(function (el) {
+      return serializeCard(el);
+    });
+
+    function attemptSave(level) {
+      var worksCopy = JSON.parse(JSON.stringify(out));
+      return compressAllWorksForStorage(worksCopy, level).then(function () {
+        var json = JSON.stringify(worksCopy);
+        try {
+          localStorage.setItem(STORAGE_KEY, json);
+        } catch (e) {
+          var name = e && e.name;
+          var isQuota =
+            name === "QuotaExceededError" ||
+            name === "NS_ERROR_DOM_QUOTA_REACHED" ||
+            (e && e.code === 22);
+          if (isQuota && level + 1 < COMPRESSION_PRESETS.length) {
+            return attemptSave(level + 1);
+          }
+          var msg = isQuota
+            ? "저장 공간이 부족합니다. 이미지를 줄이거나 카드 수를 줄인 뒤 다시 시도하세요."
+            : "저장에 실패했습니다.";
+          if (callback) callback(false, msg);
+          return;
+        }
+        applyWorksToCardDoms(cards, worksCopy);
+        if (callback) callback(true);
+      });
+    }
+
+    attemptSave(0).catch(function () {
+      if (callback) callback(false, "이미지 처리 중 오류가 났습니다. 다시 시도해 주세요.");
+    });
+  }
+
+  function showSaveMessage(text, ok) {
+    msgEl.textContent = text;
+    msgEl.className =
+      "mt-8 rounded-lg border px-4 py-3 text-sm " +
+      (ok
+        ? "border-green-200 bg-green-50 text-green-900"
+        : "border-red-200 bg-red-50 text-red-900");
+    msgEl.classList.remove("hidden");
+    setTimeout(function () {
+      msgEl.classList.add("hidden");
+    }, 5000);
+  }
+
+  function renderAll(works) {
+    listEl.innerHTML = "";
+    works.forEach(function (w, i) {
+      var c = cardTemplate(w, i);
+      fillCard(c, w);
+      wireCard(c);
+      listEl.appendChild(c);
+    });
+  }
+
+  initListDragSort();
+
+  var initial = loadFromStorage();
+  renderAll(initial.length ? initial : []);
+  initCareerAdmin();
+
+  var btnCareerAdd = document.getElementById("btn-career-add");
+  if (btnCareerAdd) {
+    btnCareerAdd.addEventListener("click", function () {
+      addCareerRow({});
+      var last = careerAdminList.lastElementChild;
+      if (last) last.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    });
+  }
+
+  document.getElementById("btn-add").addEventListener("click", function () {
+    var n = listEl.querySelectorAll(".work-card").length + 1;
+    var blank = emptyWork(n);
+    var c = cardTemplate(blank, n - 1);
+    fillCard(c, blank);
+    wireCard(c);
+    listEl.appendChild(c);
+    renumberCards();
+    c.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+
+  document.getElementById("btn-save").addEventListener("click", function () {
+    var careerOk = saveCareerFromAdminSync();
+    persistAllCards(function (ok, err) {
+      if (ok && careerOk) {
+        showSaveMessage("작품·경력이 저장되었습니다. 메인 페이지를 새로고침하면 반영됩니다.", true);
+      } else if (ok && !careerOk) {
+        showSaveMessage("작품은 저장되었으나 경력 저장에 실패했습니다.", false);
+      } else if (!ok && careerOk) {
+        showSaveMessage("경력은 저장되었습니다. 작품 저장 실패: " + (err || "알 수 없음"), false);
+      } else {
+        showSaveMessage(err || "저장 실패", false);
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>
