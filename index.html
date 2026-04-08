@@ -212,13 +212,120 @@
     display: block;
     color: inherit;
   }
+  .mobile-nav-toggle {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 8px;
+    background: rgba(242, 242, 242, 0.92);
+    color: #202020;
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  }
+  .mobile-nav-toggle:focus-visible {
+    outline: 2px solid #202020;
+    outline-offset: 2px;
+  }
+  body.mobile-menu-open .mobile-nav-toggle {
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .mobile-nav-overlay {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    background: #fff;
+    padding: 2rem;
+    box-sizing: border-box;
+  }
+  .mobile-nav-overlay.is-open {
+    display: flex;
+  }
+  .mobile-nav-overlay__close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #202020;
+    cursor: pointer;
+  }
+  .mobile-nav-overlay__link {
+    font-size: 32px;
+    font-weight: 500;
+    line-height: 1.2;
+    color: #202020;
+    text-decoration: none;
+    border: 0;
+    background: none;
+    font: inherit;
+    cursor: pointer;
+    padding: 0.25rem 0;
+  }
+  @media (max-width: 768px) {
+    .index-hero-column {
+      min-height: 100svh;
+      min-height: 100vh;
+      width: 100%;
+      max-width: 100vw;
+      box-sizing: border-box;
+      padding-left: 1rem;
+      padding-right: 1rem;
+      justify-content: center;
+    padding-bottom: 2rem;
+    }
+    #site-nav {
+      display: none !important;
+    }
+    .mobile-nav-toggle {
+      display: flex;
+    }
+    #thumbs-column {
+      position: fixed;
+      left: 0;
+      right: 0;
+      top: 0;
+      height: 100vh;
+      height: 100dvh;
+      margin-top: 0 !important;
+      padding: 12px 16px 32px !important;
+      overflow-y: auto;
+      overflow-x: hidden;
+      z-index: 100;
+      transform: translateY(100%);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.6s ease-out, opacity 0.6s ease-out;
+      -webkit-overflow-scrolling: touch;
+      align-items: stretch !important;
+    }
+    #thumbs-column.mobile-thumbs-revealed {
+      transform: translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+  @media (min-width: 769px) {
+    .mobile-nav-overlay {
+      display: none !important;
+      pointer-events: none !important;
+    }
+  }
 </style>
 </head>
 <body class="h-screen max-h-screen overflow-hidden bg-[#f2f2f2] text-[#202020]">
 <main class="flex h-screen max-h-screen w-full min-h-0 justify-center overflow-x-hidden overflow-y-hidden">
   <div class="flex h-full min-h-0 w-full min-w-0 max-w-[1800px] flex-col items-stretch lg:flex-row">
     <!-- 좌측 ~32%: 텍스트 시작 상단 195px, 스크롤 없음 · min-w-0으로 긴 텍스트가 가로로 줄 밀착 방지 -->
-    <section class="flex w-full min-w-0 shrink-0 flex-col justify-start overflow-hidden pt-[195px] lg:w-[32%] lg:min-h-0 lg:pr-6">
+    <section class="index-hero-column flex w-full min-w-0 shrink-0 flex-col justify-start overflow-hidden pt-16 pb-8 lg:pt-[195px] lg:pb-0 lg:w-[32%] lg:min-h-0 lg:px-0 lg:pr-6">
       <p class="sr-only">
         안녕하세요. UI/UX 디자이너 박성범입니다. 이곳은 그동안 제가 참여한 프로젝트의 아카이브 공간입니다. work, career.
       </p>
@@ -239,29 +346,55 @@
     <section id="thumbs-column" class="thumbs-no-scrollbar mt-8 flex min-h-0 w-full min-w-0 flex-1 flex-col items-start overflow-x-auto overflow-y-auto pt-[120px] pr-4 sm:pr-6 lg:mt-0 lg:w-[68%] lg:min-w-0 lg:self-stretch">
       <div id="thumb-panel-work" class="shrink-0">
         <div id="thumbs-grid-wrap" class="shrink-0">
-          <div id="project-grid" class="grid grid-cols-2 w-max max-w-none"></div>
+          <div id="project-grid" class="grid w-max max-w-none"></div>
         </div>
       </div>
     </section>
   </div>
 </main>
 
-<!-- Lightbox: 1600px 팝업 · 좌 400px 제목·본문(썸네일과 별도) · 우 이미지 스크롤 -->
-<div id="lightbox-overlay" class="pointer-events-none fixed inset-0 z-[1000] flex items-center justify-center bg-[rgba(0,0,0,0.8)] opacity-0 transition-opacity duration-[400ms]" aria-hidden="true" role="dialog" aria-modal="true">
-  <div id="lightbox-popup" class="box-border m-auto flex h-[calc(100vh_-_80px)] max-h-[calc(100vh_-_80px)] w-[1600px] max-w-[calc(100vw_-_80px)] flex-col overflow-hidden bg-white pl-10 pr-0 pb-0">
-    <div class="flex min-h-0 flex-1 flex-row">
-      <aside class="flex w-[400px] shrink-0 flex-col overflow-hidden pt-[160px] pr-10">
-        <h2 id="lightbox-detail-title" class="lb-detail-title"></h2>
-        <div id="lightbox-detail-body" class="lb-detail-body"></div>
-      </aside>
-      <div id="lightbox-scroll" class="ml-auto min-h-0 w-[900px] max-w-full shrink-0 overflow-x-hidden overflow-y-scroll bg-[#D8D8D8] pb-0 pt-0">
-        <img id="lightbox-img" alt="" class="m-0 border-0 p-0"/>
-      </div>
-    </div>
-  </div>
-  <button type="button" id="lightbox-close" class="pointer-events-auto fixed right-[20px] top-10 z-[1001] flex h-[52px] w-[52px] items-center justify-center rounded-full border border-neutral-300 bg-white text-[#202020] shadow-sm transition-colors duration-200 hover:bg-neutral-100" aria-label="닫기">
+<button
+  type="button"
+  id="mobile-nav-toggle"
+  class="mobile-nav-toggle fixed z-[1100]"
+  style="top: 20px; right: 20px;"
+  aria-label="메뉴 열기"
+  aria-expanded="false"
+  aria-controls="mobile-nav-overlay"
+>
+  <span class="material-symbols-outlined text-[26px] leading-none">menu</span>
+</button>
+<div
+  id="mobile-nav-overlay"
+  class="mobile-nav-overlay fixed inset-0 z-[1090]"
+  aria-hidden="true"
+  role="dialog"
+  aria-modal="true"
+  aria-label="메뉴"
+>
+  <button type="button" id="mobile-nav-close" class="mobile-nav-overlay__close" aria-label="메뉴 닫기">
+    <span class="material-symbols-outlined text-[28px] leading-none">close</span>
+  </button>
+  <nav class="flex flex-col items-center gap-8" aria-label="모바일 주요 메뉴">
+    <button type="button" class="mobile-nav-overlay__link" data-mobile-nav="work">work</button>
+    <a href="/career" class="mobile-nav-overlay__link">career</a>
+  </nav>
+</div>
+
+<!-- Lightbox: 풀스크린 팝업 · 좌(상단) 텍스트 · 우(하단) 이미지 스크롤 -->
+<div id="lightbox-overlay" class="pointer-events-none fixed inset-0 z-[1200] flex min-h-0 flex-col bg-white opacity-0 transition-opacity duration-[400ms]" aria-hidden="true" role="dialog" aria-modal="true">
+  <button type="button" id="lightbox-close" class="pointer-events-auto absolute right-5 top-5 z-[1210] flex h-[52px] w-[52px] items-center justify-center rounded-full border border-neutral-300 bg-white text-[#202020] shadow-sm transition-colors duration-200 hover:bg-neutral-100" aria-label="닫기">
     <span class="material-symbols-outlined text-[18px] leading-none">close</span>
   </button>
+  <div id="lightbox-popup" class="box-border flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden lg:flex-row">
+    <aside class="lb-aside flex shrink-0 flex-col overflow-y-auto px-6 pb-4 pt-16 lg:w-[min(400px,42vw)] lg:max-w-md lg:shrink-0 lg:overflow-y-auto lg:px-10 lg:pb-8 lg:pr-8 lg:pt-24">
+      <h2 id="lightbox-detail-title" class="lb-detail-title"></h2>
+      <div id="lightbox-detail-body" class="lb-detail-body"></div>
+    </aside>
+    <div id="lightbox-scroll" class="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden bg-[#D8D8D8]">
+      <img id="lightbox-img" alt="" class="m-0 block border-0 p-0"/>
+    </div>
+  </div>
 </div>
 
 <script src="hero-name-animation.js"></script>
@@ -286,6 +419,9 @@
       if (typeof runHeroNameDragSelect === "function") {
         runHeroNameDragSelect("#typed-output");
       }
+      try {
+        window.dispatchEvent(new CustomEvent("index-typed-complete"));
+      } catch (err) {}
     }
   });
 })();
@@ -509,6 +645,20 @@
   var THUMB_GRID_GAP_X = 8;
   var THUMB_GRID_GAP_Y = 8;
 
+  function isMobileIndex() {
+    return typeof window.matchMedia === "function" && window.matchMedia("(max-width: 768px)").matches;
+  }
+
+  function getThumbCellDims() {
+    if (isMobileIndex()) {
+      var pad = 32;
+      var cw = Math.max(240, Math.min(window.innerWidth || 0, 768) - pad);
+      if (cw < 240) cw = Math.max(240, (window.innerWidth || 375) - pad);
+      return { cardW: cw, cardH: cw };
+    }
+    return { cardW: thumbStyle.cardW, cardH: thumbStyle.cardH };
+  }
+
   function applyThumbStyleToDom() {
     if (!grid) return;
     var s = thumbStyle;
@@ -531,15 +681,32 @@
     grid.style.setProperty("--thumb-tag-px", s.tagPx + "px");
     grid.style.setProperty("--thumb-tag-py", s.tagPy + "px");
     grid.style.setProperty("--thumb-tag-radius", s.tagRadius + "px");
-    grid.style.columnGap = THUMB_GRID_GAP_X + "px";
-    grid.style.rowGap = THUMB_GRID_GAP_Y + "px";
-    grid.style.gridTemplateColumns = s.cardW + "px " + s.cardW + "px";
-    var gwpx = s.cardW * 2 + THUMB_GRID_GAP_X;
-    grid.style.width = gwpx + "px";
-    grid.style.minWidth = gwpx + "px";
-    if (wrap) {
-      wrap.style.width = gwpx + "px";
-      wrap.style.minWidth = gwpx + "px";
+    if (isMobileIndex()) {
+      var d = getThumbCellDims();
+      grid.style.columnGap = THUMB_GRID_GAP_Y + "px";
+      grid.style.rowGap = THUMB_GRID_GAP_Y + "px";
+      grid.style.gridTemplateColumns = d.cardW + "px";
+      grid.style.width = "100%";
+      grid.style.minWidth = "0";
+      grid.style.maxWidth = "100%";
+      if (wrap) {
+        wrap.style.width = "100%";
+        wrap.style.minWidth = "0";
+        wrap.style.maxWidth = "100%";
+      }
+    } else {
+      grid.style.columnGap = THUMB_GRID_GAP_X + "px";
+      grid.style.rowGap = THUMB_GRID_GAP_Y + "px";
+      grid.style.gridTemplateColumns = s.cardW + "px " + s.cardW + "px";
+      var gwpx = s.cardW * 2 + THUMB_GRID_GAP_X;
+      grid.style.width = gwpx + "px";
+      grid.style.minWidth = gwpx + "px";
+      grid.style.maxWidth = "";
+      if (wrap) {
+        wrap.style.width = gwpx + "px";
+        wrap.style.minWidth = gwpx + "px";
+        wrap.style.maxWidth = "";
+      }
     }
     syncRoutePanelWidth();
   }
@@ -549,11 +716,20 @@
   var siteNavEl = document.getElementById("site-nav");
 
   function syncRoutePanelWidth() {
+    if (isMobileIndex()) {
+      if (panelWork) {
+        panelWork.style.width = "100%";
+        panelWork.style.minWidth = "0";
+        panelWork.style.maxWidth = "100%";
+      }
+      return;
+    }
     var wpx = thumbStyle.cardW * 2 + THUMB_GRID_GAP_X;
     var ws = wpx + "px";
     if (panelWork) {
       panelWork.style.width = ws;
       panelWork.style.minWidth = ws;
+      panelWork.style.maxWidth = "";
     }
   }
 
@@ -598,11 +774,15 @@
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
         thumbsColumn.scrollLeft = 0;
+        thumbsColumn.scrollTop = 0;
       });
     });
   }
 
   function gridWidthPx() {
+    if (isMobileIndex()) {
+      return getThumbCellDims().cardW;
+    }
     var GRID_W = thumbStyle.cardW * 2 + THUMB_GRID_GAP_X;
     if (!grid) return GRID_W;
     var w = grid.getBoundingClientRect().width;
@@ -644,12 +824,16 @@
   function renderThumbs() {
     if (currentNav !== "work") return;
     if (!grid || !thumbsColumn) return;
+    applyThumbStyleToDom();
     pullWorksFromStorage();
+    var mobile = isMobileIndex();
+    var dims = getThumbCellDims();
     var gw = gridWidthPx();
     var ch = thumbsColumn.clientHeight;
     var nReal = WORKS.length;
     var total = nReal;
     var fp = worksFingerprint(WORKS);
+    var layoutTag = mobile ? "m1" : "d2";
     var key =
       fp +
       "|" +
@@ -659,32 +843,46 @@
       "|" +
       ch +
       "|" +
-      thumbStyle.cardW +
+      dims.cardW +
       "|" +
-      thumbStyle.cardH +
+      dims.cardH +
       "|" +
       THUMB_GRID_GAP_X +
       "|" +
-      THUMB_GRID_GAP_Y;
+      THUMB_GRID_GAP_Y +
+      "|" +
+      layoutTag;
     if (key === lastThumbRenderKey && grid.childElementCount === total) {
       scrollThumbsColumnToStart();
       return;
     }
     lastThumbRenderKey = key;
 
-    var padBottom = total > 0 ? thumbStyle.cardH / 2 : 0;
+    var padBottom = total > 0 ? (mobile ? dims.cardH / 3 : thumbStyle.cardH / 2) : 0;
     if (thumbsGridWrap) thumbsGridWrap.style.paddingBottom = padBottom + "px";
 
     grid.innerHTML = "";
 
     for (var i = 0; i < total; i++) {
       var slot = document.createElement("article");
-      var isRightCol = i % 2 === 1;
       var radiusClass = " rounded-3xl";
       slot.className =
         "relative shrink-0 overflow-hidden project-card cursor-pointer" + radiusClass;
-      slot.style.width = thumbStyle.cardW + "px";
-      slot.style.height = thumbStyle.cardH + "px";
+      if (mobile) {
+        slot.style.width = "100%";
+        slot.style.maxWidth = dims.cardW + "px";
+        slot.style.marginLeft = "auto";
+        slot.style.marginRight = "auto";
+        slot.style.aspectRatio = "1 / 1";
+        slot.style.height = "auto";
+      } else {
+        slot.style.width = dims.cardW + "px";
+        slot.style.height = dims.cardH + "px";
+        slot.style.aspectRatio = "";
+        slot.style.maxWidth = "";
+        slot.style.marginLeft = "";
+        slot.style.marginRight = "";
+      }
       var w = WORKS[i];
       var tsrc = thumbCardSrc(w);
       slot.style.backgroundColor = cardColors[i % 6];
@@ -750,6 +948,91 @@
     scheduleThumbLayout();
   }
 
+  function initMobileThumbIntro() {
+    var col = document.getElementById("thumbs-column");
+    if (!col) return;
+    var relayoutAfterRevealDone = false;
+    function relayoutAfterReveal() {
+      if (relayoutAfterRevealDone) return;
+      relayoutAfterRevealDone = true;
+      invalidateThumbsAndRelayout();
+    }
+    function revealNow() {
+      col.classList.add("mobile-thumbs-revealed");
+      function onTe(ev) {
+        if (ev.target !== col) return;
+        if (ev.propertyName !== "transform" && ev.propertyName !== "opacity") return;
+        col.removeEventListener("transitionend", onTe);
+        relayoutAfterReveal();
+      }
+      col.addEventListener("transitionend", onTe);
+      setTimeout(relayoutAfterReveal, 700);
+    }
+    if (!isMobileIndex()) {
+      col.classList.add("mobile-thumbs-revealed");
+      return;
+    }
+    col.classList.remove("mobile-thumbs-revealed");
+    var revealed = false;
+    function reveal() {
+      if (revealed) return;
+      revealed = true;
+      revealNow();
+    }
+    if (!document.getElementById("typed-output") || typeof window.Typed === "undefined") {
+      setTimeout(reveal, 500);
+      return;
+    }
+    window.addEventListener("index-typed-complete", function onTyped() {
+      window.removeEventListener("index-typed-complete", onTyped);
+      setTimeout(reveal, 1000);
+    });
+    setTimeout(function () {
+      if (!col.classList.contains("mobile-thumbs-revealed")) reveal();
+    }, 14000);
+  }
+
+  function wireMobileNav() {
+    var toggle = document.getElementById("mobile-nav-toggle");
+    var overlay = document.getElementById("mobile-nav-overlay");
+    var closeBtn = document.getElementById("mobile-nav-close");
+    if (!toggle || !overlay) return;
+    function closeNav() {
+      overlay.classList.remove("is-open");
+      overlay.setAttribute("aria-hidden", "true");
+      toggle.setAttribute("aria-expanded", "false");
+      document.body.style.overflow = "";
+      document.body.classList.remove("mobile-menu-open");
+    }
+    function openNav() {
+      overlay.classList.add("is-open");
+      overlay.setAttribute("aria-hidden", "false");
+      toggle.setAttribute("aria-expanded", "true");
+      document.body.style.overflow = "hidden";
+      document.body.classList.add("mobile-menu-open");
+    }
+    toggle.addEventListener("click", function () {
+      if (overlay.classList.contains("is-open")) closeNav();
+      else openNav();
+    });
+    if (closeBtn) closeBtn.addEventListener("click", closeNav);
+    overlay.querySelectorAll("a.mobile-nav-overlay__link, [data-mobile-nav]").forEach(function (el) {
+      el.addEventListener("click", closeNav);
+    });
+  }
+
+  var _indexLastMobile = isMobileIndex();
+  window.addEventListener("resize", function () {
+    var m = isMobileIndex();
+    if (m !== _indexLastMobile) {
+      _indexLastMobile = m;
+      var col = document.getElementById("thumbs-column");
+      if (col && !m) col.classList.add("mobile-thumbs-revealed");
+      applyThumbStyleToDom();
+      invalidateThumbsAndRelayout();
+    }
+  });
+
   window.addEventListener("storage", function (e) {
     if (e.key === STORAGE_KEY) invalidateThumbsAndRelayout();
   });
@@ -788,9 +1071,24 @@
     if (e.key === "Escape" && lightboxOpen) {
       e.preventDefault();
       closeLightbox();
+      return;
+    }
+    if (e.key === "Escape") {
+      var mov = document.getElementById("mobile-nav-overlay");
+      var tgl = document.getElementById("mobile-nav-toggle");
+      if (mov && mov.classList.contains("is-open")) {
+        e.preventDefault();
+        mov.classList.remove("is-open");
+        mov.setAttribute("aria-hidden", "true");
+        if (tgl) tgl.setAttribute("aria-expanded", "false");
+        document.body.style.overflow = "";
+        document.body.classList.remove("mobile-menu-open");
+      }
     }
   });
 
+  initMobileThumbIntro();
+  wireMobileNav();
   wireSiteNav();
 })();
 </script>
