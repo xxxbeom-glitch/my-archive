@@ -220,7 +220,7 @@
     <!-- 좌측 ~32%: 텍스트 시작 상단 195px, 스크롤 없음 · min-w-0으로 긴 텍스트가 가로로 줄 밀착 방지 -->
     <section class="flex w-full min-w-0 shrink-0 flex-col justify-start overflow-hidden pt-[195px] lg:w-[32%] lg:min-h-0 lg:pr-6">
       <p class="sr-only">
-        안녕하세요. UI/UX 디자이너 박성범입니다. 이곳은 그동안 제가 참여한 프로젝트의 아카이브 공간입니다. work, career, contact.
+        안녕하세요. UI/UX 디자이너 박성범입니다. 이곳은 그동안 제가 참여한 프로젝트의 아카이브 공간입니다. work, career.
       </p>
       <div class="text-[28px] font-normal leading-[40px] text-[#202020] sm:text-[36px] sm:leading-[50px] lg:text-[40px] lg:leading-[55px]">
         <span id="typed-output" class="inline min-h-[1.2em]" role="status" aria-hidden="true"></span>
@@ -232,7 +232,6 @@
       >
         <button type="button" class="site-nav-item site-nav-item--active" data-nav="work" aria-current="page">work</button>
         <a href="career.html" class="site-nav-item">career</a>
-        <button type="button" class="site-nav-item" data-nav="contact">contact</button>
       </nav>
     </section>
 
@@ -243,13 +242,6 @@
           <div id="project-grid" class="grid grid-cols-2 w-max max-w-none"></div>
         </div>
       </div>
-      <div
-        id="contact"
-        class="hidden shrink-0 min-h-[min(70vh,640px)] box-border"
-        role="region"
-        aria-label="연락"
-        data-route-placeholder="contact"
-      ></div>
     </section>
   </div>
 </main>
@@ -554,34 +546,22 @@
 
   var currentNav = "work";
   var panelWork = document.getElementById("thumb-panel-work");
-  var panelContact = document.getElementById("contact");
   var siteNavEl = document.getElementById("site-nav");
 
   function syncRoutePanelWidth() {
     var wpx = thumbStyle.cardW * 2 + THUMB_GRID_GAP_X;
     var ws = wpx + "px";
-    if (panelContact) {
-      panelContact.style.width = ws;
-      panelContact.style.minWidth = ws;
-    }
     if (panelWork) {
       panelWork.style.width = ws;
       panelWork.style.minWidth = ws;
     }
   }
 
-  function setRoutePanelVisibility(name) {
-    currentNav = name || "work";
-    var showWork = currentNav === "work";
-    var showContact = currentNav === "contact";
-    if (panelWork) panelWork.classList.toggle("hidden", !showWork);
-    if (panelContact) panelContact.classList.toggle("hidden", !showContact);
+  function setRoutePanelVisibility() {
+    currentNav = "work";
+    if (panelWork) panelWork.classList.remove("hidden");
     syncRoutePanelWidth();
-    if (showWork) scheduleThumbLayout();
-    else {
-      closeLightbox();
-      scrollThumbsColumnToStart();
-    }
+    scheduleThumbLayout();
   }
 
   function wireSiteNav() {
@@ -599,11 +579,11 @@
       btn.addEventListener("click", function () {
         var n = btn.getAttribute("data-nav");
         setNavActiveUi(n);
-        setRoutePanelVisibility(n);
+        setRoutePanelVisibility();
       });
     });
     setNavActiveUi("work");
-    setRoutePanelVisibility("work");
+    setRoutePanelVisibility();
   }
 
   applyThumbStyleToDom();
@@ -812,22 +792,6 @@
   });
 
   wireSiteNav();
-
-  try {
-    if (sessionStorage.getItem("studio-archive-open-contact") === "1") {
-      sessionStorage.removeItem("studio-archive-open-contact");
-      var nb = siteNavEl && siteNavEl.querySelectorAll("button.site-nav-item[data-nav]");
-      if (nb) {
-        nb.forEach(function (btn) {
-          var on = btn.getAttribute("data-nav") === "contact";
-          btn.classList.toggle("site-nav-item--active", on);
-          if (on) btn.setAttribute("aria-current", "page");
-          else btn.removeAttribute("aria-current");
-        });
-      }
-      setRoutePanelVisibility("contact");
-    }
-  } catch (e) {}
 })();
 </script>
 </body>

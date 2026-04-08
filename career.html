@@ -84,7 +84,7 @@
   <div class="flex h-full min-h-0 w-full min-w-0 max-w-[1800px] flex-col items-stretch lg:flex-row">
     <section class="flex w-full min-w-0 shrink-0 flex-col justify-start overflow-hidden pt-[195px] lg:w-[32%] lg:min-h-0 lg:pr-6">
       <p class="sr-only">
-        안녕하세요. UI/UX 디자이너 박성범입니다. 이곳은 그동안 제가 참여한 프로젝트의 아카이브 공간입니다. 경력 페이지. work, career, contact 내비게이션.
+        안녕하세요. UI/UX 디자이너 박성범입니다. 이곳은 그동안 제가 참여한 프로젝트의 아카이브 공간입니다. 경력 페이지. work, career 내비게이션.
       </p>
       <div class="text-[28px] font-normal leading-[40px] text-[#202020] sm:text-[36px] sm:leading-[50px] lg:text-[40px] lg:leading-[55px]">
         <span id="typed-output" class="inline min-h-[1.2em]" role="status" aria-hidden="true"></span>
@@ -96,7 +96,6 @@
       >
         <a href="index.html" class="site-nav-item">work</a>
         <span class="site-nav-item site-nav-item--active cursor-default" aria-current="page">career</span>
-        <a href="index.html" class="site-nav-item" id="nav-to-contact">contact</a>
       </nav>
       <p class="mt-10 text-xs text-neutral-500">
         <a class="underline hover:text-[#202020]" href="admin.html">Admin</a>
@@ -284,15 +283,6 @@
   window.addEventListener("pageshow", function (e) {
     if (e.persisted) renderCareerPage();
   });
-
-  var contactLink = document.getElementById("nav-to-contact");
-  if (contactLink) {
-    contactLink.addEventListener("click", function (e) {
-      try {
-        sessionStorage.setItem("studio-archive-open-contact", "1");
-      } catch (err) {}
-    });
-  }
 })();
 </script>
 </body>
