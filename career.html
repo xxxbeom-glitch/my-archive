@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html class="light h-screen overflow-hidden" lang="ko">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Career · 경력 | seongbeom's archive</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+  body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing: antialiased; }
+  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    height: 100%;
+    max-height: 100vh;
+  }
+  main, main > div { margin: 0; padding: 0; }
+  .career-no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .career-no-scrollbar::-webkit-scrollbar { display: none; }
+  .site-nav-item {
+    border: 0;
+    background: transparent;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+    width: 100%;
+    transition: opacity 0.2s ease;
+  }
+  .site-nav-item:focus-visible {
+    outline: 2px solid #202020;
+    outline-offset: 2px;
+  }
+  a.site-nav-item {
+    text-decoration: none;
+    display: block;
+    color: inherit;
+  }
+  .site-nav-item--active { opacity: 1; }
+  .site-nav-item:not(.site-nav-item--active) { opacity: 0.4; }
+  .typed-cursor {
+    display: inline;
+    font-weight: 300;
+    color: #202020;
+    vertical-align: baseline;
+  }
+  .typed-cursor--blink {
+    animation: heroTypedBlink 0.75s step-end infinite;
+  }
+  @keyframes heroTypedBlink {
+    50% { opacity: 0; }
+  }
+  #career-entries-mount .career-block {
+    font-family: Pretendard, -apple-system, BlinkMacSystemFont, sans-serif;
+    font-weight: 500;
+  }
+  #career-entries-mount .career-row-pair {
+    display: grid;
+    grid-template-columns: 63px minmax(0, 1fr);
+    gap: 0 8px;
+    align-items: start;
+    font-size: 17px;
+    line-height: 24px;
+  }
+  #career-entries-mount .career-row-pair dt { margin: 0; color: #505050; }
+  #career-entries-mount .career-row-pair dd {
+    margin: 0;
+    color: #202020;
+    white-space: normal;
+    word-break: keep-all;
+  }
+</style>
+</head>
+<body class="h-screen max-h-screen overflow-hidden bg-[#f2f2f2] text-[#202020]">
+<main class="flex h-screen max-h-screen w-full min-h-0 justify-center overflow-x-hidden overflow-y-hidden">
+  <div class="flex h-full min-h-0 w-full min-w-0 max-w-[1800px] flex-col items-stretch lg:flex-row">
+    <section class="flex w-full min-w-0 shrink-0 flex-col justify-start overflow-hidden pt-[195px] lg:w-[32%] lg:min-h-0 lg:pr-6">
+      <p class="sr-only">
+        안녕하세요. UI/UX 디자이너 박성범입니다. 이곳은 그동안 제가 참여한 프로젝트의 아카이브 공간입니다. 경력 페이지. work, career, contact 내비게이션.
+      </p>
+      <div class="text-[28px] font-normal leading-[40px] text-[#202020] sm:text-[36px] sm:leading-[50px] lg:text-[40px] lg:leading-[55px]">
+        <span id="typed-output" class="inline min-h-[1.2em]" role="status" aria-hidden="true"></span>
+      </div>
+      <nav
+        id="site-nav"
+        class="fixed bottom-[120px] left-[max(1rem,calc((100vw-1800px)/2))] z-10 flex flex-col gap-[6px] text-[20px] font-normal leading-[26px] text-[#202020]"
+        aria-label="주요 메뉴"
+      >
+        <a href="index.html" class="site-nav-item">work</a>
+        <span class="site-nav-item site-nav-item--active cursor-default" aria-current="page">career</span>
+        <a href="index.html" class="site-nav-item" id="nav-to-contact">contact</a>
+      </nav>
+      <p class="mt-10 text-xs text-neutral-500">
+        <a class="underline hover:text-[#202020]" href="admin.html">Admin</a>
+      </p>
+    </section>
+
+    <section
+      id="career-column"
+      class="career-no-scrollbar mt-8 flex min-h-0 w-full min-w-0 flex-1 flex-col items-stretch overflow-x-hidden overflow-y-auto pt-[120px] lg:mt-0 lg:w-[68%] lg:min-w-0 lg:self-stretch"
+      aria-label="경력 타임라인"
+    >
+      <!-- Figma 41:805: 우측 컬럼 전체 폭(w-full), 내부 스택 gap 25px · 항목은 items-start -->
+      <div id="career-entries-mount" class="flex w-full min-w-0 flex-col items-stretch gap-0 pb-16"></div>
+    </section>
+  </div>
+</main>
+
+<script src="hero-name-animation.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/typed.js@2.1.0/dist/typed.umd.js"></script>
+<script>
+(function () {
+  var el = document.getElementById("typed-output");
+  if (!el || typeof Typed === "undefined") return;
+  var heroString =
+    "안녕하세요<br>UI/UX 디자이너<br>박성범입니다^500<br><br>이곳은 그동안<br>제가 참여한 프로젝트의<br>아카이브 공간입니다";
+  new Typed(el, {
+    strings: [heroString],
+    typeSpeed: 60,
+    startDelay: 300,
+    showCursor: true,
+    cursorChar: "|",
+    loop: false,
+    contentType: "html",
+    smartBackspace: false,
+    backDelay: 0,
+    onComplete: function () {
+      if (typeof runHeroNameDragSelect === "function") {
+        runHeroNameDragSelect("#typed-output");
+      }
+    }
+  });
+})();
+</script>
+<script>
+(function () {
+  var CAREER_STORAGE_KEY = "studio-archive-career-v1";
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  function loadCareerForDisplay() {
+    try {
+      var raw = localStorage.getItem(CAREER_STORAGE_KEY);
+      if (!raw || !raw.trim()) return { entries: [] };
+      var o = JSON.parse(raw);
+      if (!o || !Array.isArray(o.entries)) return { entries: [] };
+      return o;
+    } catch (e) {
+      return { entries: [] };
+    }
+  }
+
+  /** 기간 문자열에서 정렬용 숫자 키 (가장 늦은 날짜 기준, 내림차순 = 최신이 큰 값) */
+  function careerPeriodSortKey(period) {
+    var s = String(period || "");
+    var re = /(20\d{2})\.\s*(\d{1,2})\.\s*(\d{1,2})/g;
+    var m;
+    var best = 0;
+    while ((m = re.exec(s)) !== null) {
+      var y = parseInt(m[1], 10);
+      var mo = parseInt(m[2], 10);
+      var d = parseInt(m[3], 10);
+      var ts = y * 10000 + mo * 100 + d;
+      if (ts > best) best = ts;
+    }
+    if (best > 0) return best;
+    var years = s.match(/20\d{2}/g);
+    if (years && years.length) {
+      return Math.max.apply(null, years.map(Number)) * 10000 + 1231;
+    }
+    return 0;
+  }
+
+  function sortCareerEntriesByPeriodDesc(entries) {
+    return entries.slice().sort(function (a, b) {
+      return careerPeriodSortKey(b.period) - careerPeriodSortKey(a.period);
+    });
+  }
+
+  function renderCareerPage() {
+    var mount = document.getElementById("career-entries-mount");
+    if (!mount) return;
+    var data = loadCareerForDisplay();
+    var entries = sortCareerEntriesByPeriodDesc(data.entries || []);
+    mount.innerHTML = "";
+    if (!entries.length) {
+      mount.innerHTML =
+        '<p class="w-full pr-4 sm:pr-6 text-sm leading-relaxed text-[#8a8a8a]">Admin의 「Career · 경력」에서 항목을 추가한 뒤 우측 「전체 저장」하세요.</p>';
+      return;
+    }
+    entries.forEach(function (ent, i) {
+      if (i > 0) {
+        var hr = document.createElement("div");
+        hr.className = "h-px w-full shrink-0 bg-[#d8d8d8] my-[41px]";
+        hr.setAttribute("aria-hidden", "true");
+        mount.appendChild(hr);
+      }
+      var art = document.createElement("article");
+      art.className =
+        "career-block flex w-full min-w-0 flex-col items-start gap-[30px] pr-4 sm:pr-6";
+      var head = document.createElement("div");
+      head.className = "flex w-full min-w-0 flex-col gap-[6px]";
+      head.innerHTML =
+        '<h3 class="m-0 w-full text-[26px] font-medium leading-[36px] text-[#202020]">' +
+        escapeHtml(ent.title || "") +
+        "</h3>" +
+        '<p class="m-0 w-full text-base font-medium leading-6 text-[#505050]">' +
+        escapeHtml(ent.period || "") +
+        "</p>";
+      var meta = document.createElement("div");
+      meta.className = "flex w-full min-w-0 flex-col gap-[6px]";
+      meta.innerHTML =
+        '<dl class="career-row-pair m-0">' +
+        "<dt>내용</dt><dd>" +
+        escapeHtml(ent.body || "") +
+        "</dd></dl>" +
+        '<dl class="career-row-pair m-0">' +
+        "<dt>참여도</dt><dd>" +
+        escapeHtml(ent.involvement || "") +
+        "</dd></dl>";
+      art.appendChild(head);
+      art.appendChild(meta);
+      mount.appendChild(art);
+    });
+  }
+
+  renderCareerPage();
+
+  window.addEventListener("storage", function (e) {
+    if (e.key === CAREER_STORAGE_KEY) renderCareerPage();
+  });
+
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden) renderCareerPage();
+  });
+
+  window.addEventListener("pageshow", function (e) {
+    if (e.persisted) renderCareerPage();
+  });
+
+  var contactLink = document.getElementById("nav-to-contact");
+  if (contactLink) {
+    contactLink.addEventListener("click", function (e) {
+      try {
+        sessionStorage.setItem("studio-archive-open-contact", "1");
+      } catch (err) {}
+    });
+  }
+})();
+</script>
+</body>
+</html>

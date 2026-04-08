@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>박성범 | UI/UX 디자이너</title>
+<title>seongbeom's archive</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
@@ -65,6 +65,56 @@
     margin-top: var(--thumb-tags-mt, 2px);
     gap: var(--thumb-tags-gap, 4px);
   }
+  #project-grid .project-card .card-bg-img {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: transform 0.4s ease;
+    transform: scale(1);
+    z-index: 0;
+    border-radius: inherit;
+  }
+  #project-grid .project-card:hover .card-bg-img {
+    transform: scale(1.07);
+  }
+  #project-grid .project-card .card-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    z-index: 1;
+    pointer-events: none;
+    border-radius: inherit;
+  }
+  #project-grid .project-card:hover .card-overlay {
+    opacity: 1;
+  }
+  #project-grid .project-card .card-meta {
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    z-index: 2;
+  }
+  #project-grid .project-card:hover .card-meta {
+    opacity: 1;
+  }
+  #project-grid .project-card .thumb-card-year,
+  #project-grid .project-card .thumb-card-title {
+    transition: color 0.25s ease;
+  }
+  #project-grid .project-card:hover .thumb-card-year,
+  #project-grid .project-card:hover .thumb-card-title {
+    color: #ffffff;
+  }
+  #project-grid .project-card .tag-pill {
+    transition: background 0.25s ease, color 0.25s ease;
+  }
+  #project-grid .project-card:hover .tag-pill {
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+  }
   #lightbox-scroll {
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
@@ -103,19 +153,8 @@
     -ms-overflow-style: none;
   }
   .thumbs-no-scrollbar::-webkit-scrollbar { display: none; }
-  .lb-detail-label {
-    margin: 0;
-    font-family: Pretendard, sans-serif;
-    font-size: 11px;
-    font-weight: 600;
-    font-style: normal;
-    line-height: 1.45;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: #8a8a8a;
-  }
   .lb-detail-title {
-    margin: 16px 0 0 0;
+    margin: 0;
     font-family: Pretendard, sans-serif;
     font-size: 28px;
     font-weight: 700;
@@ -168,26 +207,10 @@
   .site-nav-item:not(.site-nav-item--active) {
     opacity: 0.4;
   }
-  /* Career (Figma 45:909) */
-  #career-entries-mount .career-block {
-    font-family: Pretendard, -apple-system, BlinkMacSystemFont, sans-serif;
-    font-weight: 500;
-  }
-  #career-entries-mount .career-row-pair {
-    display: grid;
-    grid-template-columns: 63px minmax(0, 1fr);
-    gap: 0 8px;
-    align-items: start;
-    font-size: 17px;
-    line-height: 24px;
-  }
-  #career-entries-mount .career-row-pair dt {
-    margin: 0;
-    color: #505050;
-  }
-  #career-entries-mount .career-row-pair dd {
-    margin: 0;
-    color: #202020;
+  a.site-nav-item {
+    text-decoration: none;
+    display: block;
+    color: inherit;
   }
 </style>
 </head>
@@ -208,31 +231,20 @@
         aria-label="주요 메뉴"
       >
         <button type="button" class="site-nav-item site-nav-item--active" data-nav="work" aria-current="page">work</button>
-        <button type="button" class="site-nav-item" data-nav="career">career</button>
+        <a href="career.html" class="site-nav-item">career</a>
         <button type="button" class="site-nav-item" data-nav="contact">contact</button>
       </nav>
-      <p class="mt-10 text-xs text-neutral-500">
-        <a class="underline hover:text-[#202020]" href="admin.html">Admin</a>
-      </p>
     </section>
 
     <!-- 우측 ~68%: 그리드 상단 120px, 하단 패딩=카드 높이의 ½ · 카드 너비+간격만큼 최소 폭 확보 -->
-    <section id="thumbs-column" class="thumbs-no-scrollbar mt-8 flex min-h-0 w-full min-w-0 flex-1 flex-col items-center overflow-x-auto overflow-y-auto pt-[120px] lg:mt-0 lg:w-[68%] lg:min-w-0 lg:self-stretch">
+    <section id="thumbs-column" class="thumbs-no-scrollbar mt-8 flex min-h-0 w-full min-w-0 flex-1 flex-col items-start overflow-x-auto overflow-y-auto pt-[120px] pr-4 sm:pr-6 lg:mt-0 lg:w-[68%] lg:min-w-0 lg:self-stretch">
       <div id="thumb-panel-work" class="shrink-0">
         <div id="thumbs-grid-wrap" class="shrink-0">
           <div id="project-grid" class="grid grid-cols-2 w-max max-w-none"></div>
         </div>
       </div>
       <div
-        id="thumb-panel-career"
-        class="hidden shrink-0 min-h-[min(70vh,640px)] box-border flex flex-col items-end pt-0"
-        role="region"
-        aria-label="경력"
-      >
-        <div id="career-entries-mount" class="w-[285px] max-w-full shrink-0 pb-16"></div>
-      </div>
-      <div
-        id="thumb-panel-contact"
+        id="contact"
         class="hidden shrink-0 min-h-[min(70vh,640px)] box-border"
         role="region"
         aria-label="연락"
@@ -242,12 +254,11 @@
   </div>
 </main>
 
-<!-- Lightbox: 1600px 팝업 · 좌 400px 상세 텍스트(썸네일과 별도) · 우 이미지 스크롤 -->
+<!-- Lightbox: 1600px 팝업 · 좌 400px 제목·본문(썸네일과 별도) · 우 이미지 스크롤 -->
 <div id="lightbox-overlay" class="pointer-events-none fixed inset-0 z-[1000] flex items-center justify-center bg-[rgba(0,0,0,0.8)] opacity-0 transition-opacity duration-[400ms]" aria-hidden="true" role="dialog" aria-modal="true">
   <div id="lightbox-popup" class="box-border m-auto flex h-[calc(100vh_-_80px)] max-h-[calc(100vh_-_80px)] w-[1600px] max-w-[calc(100vw_-_80px)] flex-col overflow-hidden bg-white pl-10 pr-0 pb-0">
     <div class="flex min-h-0 flex-1 flex-row">
       <aside class="flex w-[400px] shrink-0 flex-col overflow-hidden pt-[160px] pr-10">
-        <p id="lightbox-detail-label" class="lb-detail-label"></p>
         <h2 id="lightbox-detail-title" class="lb-detail-title"></h2>
         <div id="lightbox-detail-body" class="lb-detail-body"></div>
       </aside>
@@ -261,6 +272,7 @@
   </button>
 </div>
 
+<script src="hero-name-animation.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/typed.js@2.1.0/dist/typed.umd.js"></script>
 <script>
 (function () {
@@ -279,12 +291,9 @@
     smartBackspace: false,
     backDelay: 0,
     onComplete: function () {
-      var out = document.querySelector("#typed-output");
-      if (!out) return;
-      out.innerHTML = out.innerHTML.replace(
-        "박성범",
-        '<span style="background-color: #202020; color: #ffffff; font-weight: 700; padding: 0 6px;">박성범</span>'
-      );
+      if (typeof runHeroNameDragSelect === "function") {
+        runHeroNameDragSelect("#typed-output");
+      }
     }
   });
 })();
@@ -292,7 +301,6 @@
 <script>
 (function () {
   var STORAGE_KEY = "studio-archive-portfolio-v1";
-  var CAREER_STORAGE_KEY = "studio-archive-career-v1";
   var PLACEHOLDER = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
 
   var DEFAULT_WORKS = [
@@ -301,7 +309,6 @@
       title: "원더플레이스",
       description: "",
       location: "2026",
-      detailLabel: "프로젝트 개요",
       detailTitle: "모바일 커머스 탐색·구매 동선 재설계",
       detailBody:
         "사용자 리서치를 바탕으로 카테고리 진입부터 결제 완료까지 단계별 이탈 지점을 정리하고, 시각적 위계와 여백을 조정해 스캔 가능한 레이아웃으로 정리했습니다.\n\n핵심 상품과 프로모션을 첫 화면에서 명확히 드러내고, 필터·정렬 패턴을 통일해 반복 탐색 시 인지 부담을 줄였습니다."
@@ -311,7 +318,6 @@
       title: "원더플레이스",
       description: "",
       location: "2026",
-      detailLabel: "프로젝트 개요",
       detailTitle: "브랜드 일관성과 접근성을 고려한 UI 키트",
       detailBody:
         "컬러·타이포·컴포넌트 스펙을 문서화해 제품·마케팼 채널 간 시각적 언어를 맞추었습니다.\n\n대비·터치 타깃·포커스 상태를 점검해 WCAG 기준에 가깝게 맞추는 방향으로 컴포넌트 가이드를 제안했습니다."
@@ -321,7 +327,6 @@
       title: "원더플레이스",
       description: "",
       location: "2026",
-      detailLabel: "프로젝트 개요",
       detailTitle: "데이터 기반 대시보드 정보 구조",
       detailBody:
         "운영 지표의 우선순위를 정의하고, 한 화면에서 ‘지금 확인해야 할 상태’가 드러나도록 카드·차트 배치를 재구성했습니다.\n\n모바일 뷰에서는 핵심 KPI만 노출하고 상세는 드릴다운으로 이어지도록 단계를 나누었습니다."
@@ -337,64 +342,6 @@
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;");
-  }
-
-  function loadCareerForDisplay() {
-    try {
-      var raw = localStorage.getItem(CAREER_STORAGE_KEY);
-      if (!raw || !raw.trim()) return { entries: [] };
-      var o = JSON.parse(raw);
-      if (!o || !Array.isArray(o.entries)) return { entries: [] };
-      return o;
-    } catch (e) {
-      return { entries: [] };
-    }
-  }
-
-  function renderCareerPanel() {
-    var mount = document.getElementById("career-entries-mount");
-    if (!mount) return;
-    var data = loadCareerForDisplay();
-    var entries = data.entries || [];
-    mount.innerHTML = "";
-    if (!entries.length) {
-      mount.innerHTML =
-        '<p class="text-sm leading-relaxed text-[#8a8a8a]">Admin의 「Career · 경력」에서 항목을 추가한 뒤 「모두 저장」하세요.</p>';
-      return;
-    }
-    entries.forEach(function (ent, i) {
-      if (i > 0) {
-        var hr = document.createElement("div");
-        hr.className = "career-divider h-px w-full bg-[#d8d8d8] my-[25px]";
-        hr.setAttribute("aria-hidden", "true");
-        mount.appendChild(hr);
-      }
-      var art = document.createElement("article");
-      art.className = "career-block flex flex-col items-start gap-[30px]";
-      var head = document.createElement("div");
-      head.className = "flex max-w-[231px] flex-col gap-[6px]";
-      head.innerHTML =
-        '<h3 class="m-0 w-full text-[26px] font-medium leading-[36px] text-[#202020]">' +
-        escapeHtml(ent.title || "") +
-        "</h3>" +
-        '<p class="m-0 w-full text-base font-medium leading-6 text-[#505050]">' +
-        escapeHtml(ent.period || "") +
-        "</p>";
-      var meta = document.createElement("div");
-      meta.className = "flex w-full flex-col gap-[6px]";
-      meta.innerHTML =
-        '<dl class="career-row-pair m-0">' +
-        "<dt>내용</dt><dd>" +
-        escapeHtml(ent.body || "") +
-        "</dd></dl>" +
-        '<dl class="career-row-pair m-0">' +
-        "<dt>참여도</dt><dd>" +
-        escapeHtml(ent.involvement || "") +
-        "</dd></dl>";
-      art.appendChild(head);
-      art.appendChild(meta);
-      mount.appendChild(art);
-    });
   }
 
   function cardTags(w) {
@@ -444,22 +391,29 @@
     return (w && w.title) ? w.title : "원더플레이스";
   }
 
-  var WORKS = loadWorks();
-  if (WORKS === null) WORKS = cloneDefault();
+  var WORKS = cloneDefault();
   var grid = document.getElementById("project-grid");
+
+  // projects.json fetch → 성공하면 덮어씀, 실패하면 DEFAULT_WORKS 유지
+  fetch("projects.json")
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (Array.isArray(data) && data.length) {
+        WORKS = data;
+        lastThumbRenderKey = "";
+        scheduleThumbLayout();
+      }
+    })
+    .catch(function() {
+      // fetch 실패시 DEFAULT_WORKS 유지
+    });
   var overlay = document.getElementById("lightbox-overlay");
   var lbScroll = document.getElementById("lightbox-scroll");
   var lbImg = document.getElementById("lightbox-img");
-  var lbDetailLabel = document.getElementById("lightbox-detail-label");
   var lbDetailTitle = document.getElementById("lightbox-detail-title");
   var lbDetailBody = document.getElementById("lightbox-detail-body");
   var lbClose = document.getElementById("lightbox-close");
   var lightboxOpen = false;
-
-  function detailLabelText(w) {
-    if (w && String(w.detailLabel || "").trim()) return String(w.detailLabel).trim();
-    return "프로젝트 개요";
-  }
 
   function detailTitleText(w) {
     if (w && String(w.detailTitle || "").trim()) return String(w.detailTitle).trim();
@@ -478,7 +432,6 @@
     if (lbScroll) lbScroll.scrollTop = 0;
     lbImg.src = overlaySrc(w);
     lbImg.alt = detailTitleText(w);
-    if (lbDetailLabel) lbDetailLabel.textContent = detailLabelText(w);
     if (lbDetailTitle) lbDetailTitle.textContent = detailTitleText(w);
     if (lbDetailBody) lbDetailBody.textContent = detailBodyText(w);
     lightboxOpen = true;
@@ -592,17 +545,12 @@
 
   var currentNav = "work";
   var panelWork = document.getElementById("thumb-panel-work");
-  var panelCareer = document.getElementById("thumb-panel-career");
-  var panelContact = document.getElementById("thumb-panel-contact");
+  var panelContact = document.getElementById("contact");
   var siteNavEl = document.getElementById("site-nav");
 
   function syncRoutePanelWidth() {
     var wpx = thumbStyle.cardW * 2 + THUMB_GRID_GAP_X;
     var ws = wpx + "px";
-    if (panelCareer) {
-      panelCareer.style.width = ws;
-      panelCareer.style.minWidth = ws;
-    }
     if (panelContact) {
       panelContact.style.width = ws;
       panelContact.style.minWidth = ws;
@@ -616,23 +564,20 @@
   function setRoutePanelVisibility(name) {
     currentNav = name || "work";
     var showWork = currentNav === "work";
-    var showCareer = currentNav === "career";
     var showContact = currentNav === "contact";
     if (panelWork) panelWork.classList.toggle("hidden", !showWork);
-    if (panelCareer) panelCareer.classList.toggle("hidden", !showCareer);
     if (panelContact) panelContact.classList.toggle("hidden", !showContact);
     syncRoutePanelWidth();
     if (showWork) scheduleThumbLayout();
     else {
       closeLightbox();
-      if (showCareer) renderCareerPanel();
-      scrollThumbsColumnToEnd();
+      scrollThumbsColumnToStart();
     }
   }
 
   function wireSiteNav() {
     if (!siteNavEl) return;
-    var navBtns = siteNavEl.querySelectorAll(".site-nav-item[data-nav]");
+    var navBtns = siteNavEl.querySelectorAll("button.site-nav-item[data-nav]");
     function setNavActiveUi(name) {
       navBtns.forEach(function (btn) {
         var on = btn.getAttribute("data-nav") === name;
@@ -658,13 +603,12 @@
   var thumbsGridWrap = document.getElementById("thumbs-grid-wrap");
   var lastThumbRenderKey = "";
 
-  /** 가로 스크롤 시 우측 콘텐츠(그리드·경력 블록)이 잘리지 않도록 끝으로 맞춤 */
-  function scrollThumbsColumnToEnd() {
+  /** 썸네일 그리드 좌측 = 열 좌측과 맞춤(career.html과 동일 기준). 가로 스크롤은 왼쪽부터 */
+  function scrollThumbsColumnToStart() {
     if (!thumbsColumn) return;
     requestAnimationFrame(function () {
       requestAnimationFrame(function () {
-        var maxScroll = thumbsColumn.scrollWidth - thumbsColumn.clientWidth;
-        thumbsColumn.scrollLeft = maxScroll > 0 ? maxScroll : 0;
+        thumbsColumn.scrollLeft = 0;
       });
     });
   }
@@ -727,7 +671,7 @@
       "|" +
       THUMB_GRID_GAP_Y;
     if (key === lastThumbRenderKey && grid.childElementCount === total) {
-      scrollThumbsColumnToEnd();
+      scrollThumbsColumnToStart();
       return;
     }
     lastThumbRenderKey = key;
@@ -747,17 +691,22 @@
       slot.style.height = thumbStyle.cardH + "px";
       var w = WORKS[i];
       var tsrc = thumbCardSrc(w);
-      if (tsrc) {
-        slot.style.backgroundColor = cardColors[i % 6];
-        slot.style.backgroundImage = 'url("' + tsrc.split('"').join("%22") + '")';
-        slot.style.backgroundSize = "cover";
-        slot.style.backgroundPosition = "center";
-        slot.style.backgroundRepeat = "no-repeat";
-      } else {
-        slot.style.backgroundImage = "none";
-        slot.style.backgroundColor = cardColors[i % 6];
-      }
+      slot.style.backgroundColor = cardColors[i % 6];
+      slot.style.backgroundImage = "none";
       slot.setAttribute("data-work-index", String(i));
+
+      var cardBg = document.createElement("div");
+      cardBg.className = "card-bg-img";
+      cardBg.setAttribute("aria-hidden", "true");
+      if (tsrc) {
+        cardBg.style.backgroundImage = 'url("' + tsrc.split('"').join("%22") + '")';
+      }
+      slot.appendChild(cardBg);
+
+      var overlay = document.createElement("div");
+      overlay.className = "card-overlay";
+      overlay.setAttribute("aria-hidden", "true");
+      slot.appendChild(overlay);
 
       var meta = document.createElement("div");
       meta.className = "card-meta";
@@ -782,7 +731,7 @@
       grid.appendChild(slot);
     }
 
-    scrollThumbsColumnToEnd();
+    scrollThumbsColumnToStart();
   }
 
   function scheduleThumbLayout() {
@@ -807,21 +756,12 @@
 
   window.addEventListener("storage", function (e) {
     if (e.key === STORAGE_KEY) invalidateThumbsAndRelayout();
-    if (e.key === CAREER_STORAGE_KEY && currentNav === "career") {
-      renderCareerPanel();
-      scrollThumbsColumnToEnd();
-    }
   });
   window.addEventListener("pageshow", function (e) {
     if (e.persisted) invalidateThumbsAndRelayout();
   });
   document.addEventListener("visibilitychange", function () {
     if (document.hidden) return;
-    if (currentNav === "career") {
-      renderCareerPanel();
-      scrollThumbsColumnToEnd();
-      return;
-    }
     if (currentNav !== "work") return;
     var stored = loadWorks();
     var next = stored !== null ? stored : cloneDefault();
@@ -851,6 +791,22 @@
   });
 
   wireSiteNav();
+
+  try {
+    if (sessionStorage.getItem("studio-archive-open-contact") === "1") {
+      sessionStorage.removeItem("studio-archive-open-contact");
+      var nb = siteNavEl && siteNavEl.querySelectorAll("button.site-nav-item[data-nav]");
+      if (nb) {
+        nb.forEach(function (btn) {
+          var on = btn.getAttribute("data-nav") === "contact";
+          btn.classList.toggle("site-nav-item--active", on);
+          if (on) btn.setAttribute("aria-current", "page");
+          else btn.removeAttribute("aria-current");
+        });
+      }
+      setRoutePanelVisibility("contact");
+    }
+  } catch (e) {}
 })();
 </script>
 </body>
