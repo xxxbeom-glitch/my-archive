@@ -391,22 +391,31 @@
     return (w && w.title) ? w.title : "원더플레이스";
   }
 
-  var WORKS = cloneDefault();
+  /** localStorage에 없을 때만 사용하는 projects.json 스냅샷(null이면 내장 DEFAULT) */
+  var WORKS_FILE = null;
+  var storedWorksInit = loadWorks();
+  var WORKS =
+    storedWorksInit !== null ? storedWorksInit : cloneDefault();
   var grid = document.getElementById("project-grid");
 
-  // projects.json fetch → 성공하면 덮어씀, 실패하면 DEFAULT_WORKS 유지
-  fetch("projects.json")
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (Array.isArray(data) && data.length) {
-        WORKS = data;
+  if (storedWorksInit === null) {
+    fetch("projects.json")
+      .then(function (r) {
+        if (!r.ok) throw new Error("projects.json not ok");
+        return r.json();
+      })
+      .then(function (data) {
+        if (!Array.isArray(data)) return;
+        WORKS_FILE = JSON.parse(JSON.stringify(data));
+        if (loadWorks() !== null) return;
+        WORKS = JSON.parse(JSON.stringify(data));
         lastThumbRenderKey = "";
         scheduleThumbLayout();
-      }
-    })
-    .catch(function() {
-      // fetch 실패시 DEFAULT_WORKS 유지
-    });
+      })
+      .catch(function () {
+        /* WORKS_FILE 유지 null → pullWorksFromStorage에서 cloneDefault() */
+      });
+  }
   var overlay = document.getElementById("lightbox-overlay");
   var lbScroll = document.getElementById("lightbox-scroll");
   var lbImg = document.getElementById("lightbox-img");
@@ -624,8 +633,15 @@
 
   function pullWorksFromStorage() {
     var stored = loadWorks();
-    if (stored !== null) WORKS = stored;
-    else WORKS = cloneDefault();
+    if (stored !== null) {
+      WORKS = stored;
+      return;
+    }
+    if (WORKS_FILE !== null) {
+      WORKS = WORKS_FILE;
+      return;
+    }
+    WORKS = cloneDefault();
   }
 
   function worksFingerprint(arr) {
@@ -764,7 +780,12 @@
     if (document.hidden) return;
     if (currentNav !== "work") return;
     var stored = loadWorks();
-    var next = stored !== null ? stored : cloneDefault();
+    var next =
+      stored !== null
+        ? stored
+        : WORKS_FILE !== null
+          ? WORKS_FILE
+          : cloneDefault();
     if (worksFingerprint(next) === worksFingerprint(WORKS)) return;
     invalidateThumbsAndRelayout();
   });

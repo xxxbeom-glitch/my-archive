@@ -152,16 +152,27 @@
       .replace(/"/g, "&quot;");
   }
 
-  function loadCareerForDisplay() {
+  /** null = localStorage에 유효한 경력 데이터 없음 → career.json fetch 대상 */
+  function loadCareerFromLocalStorage() {
     try {
       var raw = localStorage.getItem(CAREER_STORAGE_KEY);
-      if (!raw || !raw.trim()) return { entries: [] };
+      if (!raw || !raw.trim()) return null;
       var o = JSON.parse(raw);
-      if (!o || !Array.isArray(o.entries)) return { entries: [] };
+      if (!o || !Array.isArray(o.entries)) return null;
       return o;
     } catch (e) {
-      return { entries: [] };
+      return null;
     }
+  }
+
+  /** LS 우선, 없으면 fetch로 채운 career.json, 그것도 없으면 빈 목록 */
+  var CAREER_FILE = null;
+
+  function getCareerDisplayData() {
+    var ls = loadCareerFromLocalStorage();
+    if (ls !== null) return ls;
+    if (CAREER_FILE !== null) return CAREER_FILE;
+    return { entries: [] };
   }
 
   /** 기간 문자열에서 정렬용 숫자 키 (가장 늦은 날짜 기준, 내림차순 = 최신이 큰 값) */
@@ -194,7 +205,7 @@
   function renderCareerPage() {
     var mount = document.getElementById("career-entries-mount");
     if (!mount) return;
-    var data = loadCareerForDisplay();
+    var data = getCareerDisplayData();
     var entries = sortCareerEntriesByPeriodDesc(data.entries || []);
     mount.innerHTML = "";
     if (!entries.length) {
@@ -238,7 +249,29 @@
     });
   }
 
-  renderCareerPage();
+  var careerLsInit = loadCareerFromLocalStorage();
+  if (careerLsInit !== null) {
+    renderCareerPage();
+  } else {
+    fetch("career.json")
+      .then(function (r) {
+        if (!r.ok) throw new Error("career.json not ok");
+        return r.json();
+      })
+      .then(function (data) {
+        if (data && Array.isArray(data.entries)) {
+          CAREER_FILE = data;
+        } else {
+          CAREER_FILE = { entries: [] };
+        }
+        if (loadCareerFromLocalStorage() !== null) return;
+        renderCareerPage();
+      })
+      .catch(function () {
+        CAREER_FILE = null;
+        renderCareerPage();
+      });
+  }
 
   window.addEventListener("storage", function (e) {
     if (e.key === CAREER_STORAGE_KEY) renderCareerPage();
