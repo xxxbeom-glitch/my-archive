@@ -92,6 +92,47 @@
     white-space: normal;
     word-break: keep-all;
   }
+  .career-brand-ticker-wrap {
+    display: none;
+  }
+  @media (min-width: 769px) {
+    .career-brand-ticker-wrap {
+      display: block;
+    }
+  }
+  .brand-ticker {
+    width: 100%;
+    overflow: hidden;
+    padding: 16px 0 64px 0;
+  }
+  .brand-track {
+    display: inline-flex;
+    gap: 8px;
+    width: max-content;
+    animation: career-ticker-scroll 20s linear infinite;
+  }
+  @keyframes career-ticker-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .brand-track img {
+    width: 230px;
+    height: 74px;
+    object-fit: contain;
+    flex-shrink: 0;
+    opacity: 0.5;
+    filter: grayscale(100%);
+    transition: opacity 0.2s ease, filter 0.2s ease;
+  }
+  .brand-track img:hover {
+    opacity: 1;
+    filter: grayscale(0%);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .brand-track {
+      animation: none;
+    }
+  }
 </style>
 </head>
 <body class="h-screen max-h-screen overflow-hidden bg-[#f2f2f2] text-[#202020]">
@@ -119,6 +160,22 @@
       class="career-no-scrollbar mt-8 flex min-h-0 w-full min-w-0 flex-1 flex-col items-stretch overflow-x-hidden overflow-y-auto pt-[120px] lg:mt-0 lg:w-[68%] lg:min-w-0 lg:self-stretch"
       aria-label="경력 타임라인"
     >
+      <div class="career-brand-ticker-wrap w-full shrink-0" role="region" aria-label="협력 브랜드 로고">
+        <div class="brand-ticker">
+          <div class="brand-track">
+            <img src="imgs/brand-01.png" alt="" role="presentation" />
+            <img src="imgs/brand-02.png" alt="" role="presentation" />
+            <img src="imgs/brand-03.png" alt="" role="presentation" />
+            <img src="imgs/brand-04.png" alt="" role="presentation" />
+            <img src="imgs/brand-05.png" alt="" role="presentation" />
+            <img src="imgs/brand-01.png" alt="" role="presentation" />
+            <img src="imgs/brand-02.png" alt="" role="presentation" />
+            <img src="imgs/brand-03.png" alt="" role="presentation" />
+            <img src="imgs/brand-04.png" alt="" role="presentation" />
+            <img src="imgs/brand-05.png" alt="" role="presentation" />
+          </div>
+        </div>
+      </div>
       <!-- Figma 41:805: 우측 컬럼 전체 폭(w-full), 내부 스택 gap 25px · 항목은 items-start -->
       <div id="career-entries-mount" class="flex w-full min-w-0 flex-col items-stretch gap-0 pb-16"></div>
     </section>
